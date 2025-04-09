@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "56125988775",
+    "project_id": "controlpaqueteria-3cd8e",
+    "storage_bucket": "controlpaqueteria-3cd8e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:56125988775:android:f01f10ea7ff4fb41c82082",
+        "android_client_info": {
+          "package_name": "com.luis.applogin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYtvbx8nsH5ZvAPmbYMxsnTqWyA9lbgzU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

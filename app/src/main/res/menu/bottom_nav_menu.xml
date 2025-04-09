@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_inicio"
+        android:icon="@drawable/home"
+        android:title="Inicio" />
+    <item
+        android:id="@+id/nav_agregar"
+        android:icon="@drawable/add"
+        android:title="Agregar" />
+    <item
+        android:id="@+id/nav_historial"
+        android:icon="@drawable/history"
+        android:title="Historial" />
+    <item
+        android:id="@+id/nav_perfil"
+        android:icon="@drawable/profile"
+        android:title="Perfil" />
+</menu>

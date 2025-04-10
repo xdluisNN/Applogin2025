@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.firebase.auth.FirebaseAuth
 
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var ingresarButton: Button

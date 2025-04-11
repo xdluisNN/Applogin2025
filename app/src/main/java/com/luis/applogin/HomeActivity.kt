@@ -1,12 +1,9 @@
 package com.luis.applogin
 
-import android.app.AlertDialog
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import com.google.firebase.auth.FirebaseAuth
+import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 enum class ProviderType{
     BASIC
@@ -14,45 +11,44 @@ enum class ProviderType{
 
 class HomeActivity : AppCompatActivity() {
 
-    private lateinit var emailText2: TextView
-    private lateinit var proveedorText: TextView
-    private lateinit var salirButton: Button
+    private lateinit var email: String
+    private lateinit var provider: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
-        // Conectar vistas con el layout
-        emailText2 = findViewById(R.id.emailText2)
-        proveedorText = findViewById(R.id.proveedorText)
-        salirButton = findViewById(R.id.salirButton)
+        email = intent.getStringExtra("email") ?: ""
+        provider = intent.getStringExtra("provider") ?: ""
 
-        val bundle: Bundle? = intent.extras
-        val email: String? = bundle?.getString("email")
-        val provider: String? = bundle?.getString("provider")
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
-        setup(email ?: "", provider ?: "")
+        // Cargar fragmento por defecto
+        openFragment(InicioFragment())
+
+        bottomNav.setOnItemSelectedListener { menuItem ->
+            val fragment: Fragment = when (menuItem.itemId) {
+                R.id.nav_inicio -> InicioFragment()
+                R.id.nav_agregar -> AgregarFragment()
+                R.id.nav_historial -> HistorialFragment()
+                R.id.nav_perfil -> {
+                    val perfilFragment = PerfilFragment()
+                    perfilFragment.arguments = Bundle().apply {
+                        putString("email", email)
+                        putString("provider", provider)
+                    }
+                    perfilFragment
+                }
+                else -> InicioFragment()
+            }
+            openFragment(fragment)
+            true
+        }
     }
 
-    private fun setup(email: String, provider: String) {
-        title = "Inicio"
-        emailText2.text = email
-        proveedorText.text = provider
-
-        salirButton.setOnClickListener {
-            val builder = AlertDialog.Builder(this)
-            builder.setTitle("Confirmar salida")
-            builder.setMessage("¿Estás seguro de que deseas cerrar sesión?")
-            builder.setPositiveButton("Sí") { _, _ ->
-                FirebaseAuth.getInstance().signOut()
-                onBackPressed() // O puedes usar finish() si prefieres cerrar esta actividad
-            }
-            builder.setNegativeButton("No", null)
-
-            val dialog: AlertDialog = builder.create()
-            dialog.show()
-        }
+    private fun openFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
     }
 }

@@ -2,8 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
     <!-- Botón 1: Paquetería -->
     <LinearLayout
@@ -70,32 +72,33 @@
     <!-- Botón 3: Sistemas -->
     <LinearLayout
         android:id="@+id/btnSistemas"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:background="@drawable/bg_green"
-        android:padding="16dp"
-        android:gravity="center"
-        android:elevation="6dp"
+        android:layout_width="394dp"
+        android:layout_height="183dp"
         android:layout_margin="8dp"
-        app:layout_constraintTop_toBottomOf="@id/btnAsociados"
-        app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/bg_green"
+        android:elevation="6dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintHorizontal_bias="0.47"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnAsociados"
+        app:layout_constraintVertical_bias="0.066">
 
         <ImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/code"
-            />
+            android:src="@drawable/code" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SISTEMAS"
+            android:layout_marginStart="16dp"
             android:background="@drawable/btn_outline"
-            android:textColor="@android:color/black"
-            android:layout_marginStart="16dp" />
+            android:text="SISTEMAS"
+            android:textColor="@android:color/black" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

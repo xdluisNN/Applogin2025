@@ -3,12 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AsociadosFragment">
+    tools:context=".AsociadosFragment"
+    android:background="@drawable/fondo_de_app">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewEmpresas"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Asociados" />
-
+        android:layout_height="match_parent"/>
 </FrameLayout>

@@ -29,11 +29,10 @@
             android:src="@drawable/inbox"
             />
 
-        <Button
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="PAQUETERÍA"
-            android:background="@drawable/btn_outline"
             android:textColor="@android:color/black"
             android:layout_marginStart="16dp" />
     </LinearLayout>
@@ -60,11 +59,10 @@
             android:src="@drawable/profile"
             />
 
-        <Button
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="ASOCIADOS"
-            android:background="@drawable/btn_outline"
             android:textColor="@android:color/black"
             android:layout_marginStart="16dp" />
     </LinearLayout>
@@ -92,11 +90,10 @@
             android:layout_height="48dp"
             android:src="@drawable/code" />
 
-        <Button
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:background="@drawable/btn_outline"
             android:text="SISTEMAS"
             android:textColor="@android:color/black" />
     </LinearLayout>

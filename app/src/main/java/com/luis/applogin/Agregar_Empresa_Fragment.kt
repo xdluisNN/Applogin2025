@@ -1,6 +1,7 @@
 package com.luis.applogin
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -42,7 +43,9 @@ class Agregar_Empresa_Fragment : Fragment() {
         }
 
         btnRegistrarEmpresa.setOnClickListener {
-            subirImagenYRegistrarEmpresa()
+            if (validarCampos()){
+                mostrarDialogoConfirmacionRegistro()
+            }
         }
 
         return view
@@ -67,19 +70,6 @@ class Agregar_Empresa_Fragment : Fragment() {
         val nombre = editTextNombre.text.toString().trim()
         val descripcion = editTextDescripcion.text.toString().trim()
 
-        if (nombre.isEmpty()) {
-            editTextNombre.error = "Campo obligatorio"
-            return
-        }
-        if (descripcion.isEmpty()) {
-            editTextDescripcion.error = "Campo obligatorio"
-            return
-        }
-        if (imagenUri == null) {
-            Toast.makeText(requireContext(), "Selecciona una imagen", Toast.LENGTH_SHORT).show()
-            return
-        }
-
         val nombreArchivo = "empresas/${UUID.randomUUID()}.jpg"
         val referencia = storage.reference.child(nombreArchivo)
 
@@ -93,6 +83,43 @@ class Agregar_Empresa_Fragment : Fragment() {
                 Toast.makeText(requireContext(), "Error al subir imagen", Toast.LENGTH_SHORT).show()
             }
     }
+
+    private fun mostrarDialogoConfirmacionRegistro() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Confirmar registro")
+            .setMessage("¿Estás seguro de que deseas registrar esta empresa?")
+            .setPositiveButton("Confirmar") { _, _ ->
+                subirImagenYRegistrarEmpresa()
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun validarCampos(): Boolean {
+        val nombre = editTextNombre.text.toString().trim()
+        val descripcion = editTextDescripcion.text.toString().trim()
+
+        var valido = true
+
+        if (nombre.isEmpty()) {
+            editTextNombre.error = "Campo obligatorio"
+            valido = false
+        }
+
+        if (descripcion.isEmpty()) {
+            editTextDescripcion.error = "Campo obligatorio"
+            valido = false
+        }
+
+        if (imagenUri == null) {
+            Toast.makeText(requireContext(), "Selecciona una imagen", Toast.LENGTH_SHORT).show()
+            valido = false
+        }
+
+        return valido
+    }
+
+
 
     private fun guardarEmpresaFirestore(nombre: String, descripcion: String, imagenUrl: String) {
         val nuevaEmpresa = hashMapOf(

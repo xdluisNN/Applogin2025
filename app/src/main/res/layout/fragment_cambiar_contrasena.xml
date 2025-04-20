@@ -1,0 +1,33 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/etPasswordActual"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Contraseña actual"
+        android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/etPasswordNueva"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nueva contraseña"
+        android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/etPasswordConfirmacion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Confirmar nueva contraseña"
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/btnCambiarPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cambiar contraseña" />
+</LinearLayout>

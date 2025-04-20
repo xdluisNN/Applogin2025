@@ -1,30 +1,95 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp"
-    android:orientation="vertical"
-    android:gravity="center_horizontal">
+    android:background="@drawable/fondo_de_app">
 
-    <TextView
-        android:id="@+id/emailText"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Email"
-        android:textSize="20sp"
-        android:layout_marginBottom="16dp" />
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:background="@drawable/bg_card"
+        android:layout_marginTop="77dp"
+        android:gravity="center_horizontal">
 
-    <TextView
-        android:id="@+id/proveedorText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Proveedor"
-        android:textSize="20sp"
-        android:layout_marginBottom="32dp" />
+        <EditText
+            android:id="@+id/editTextNombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nombre"
+            android:background="@drawable/edittext_background"
+            android:padding="12dp"
+            android:layout_marginBottom="12dp"/>
 
-    <Button
-        android:id="@+id/logoutButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Cerrar sesión" />
-</LinearLayout>
+        <EditText
+            android:id="@+id/editTextDireccion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Dirección"
+            android:background="@drawable/edittext_background"
+            android:padding="12dp"
+            android:layout_marginBottom="12dp"/>
+
+        <EditText
+            android:id="@+id/editTextTelefono"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Teléfono"
+            android:inputType="phone"
+            android:background="@drawable/edittext_background"
+            android:padding="12dp"
+            android:layout_marginBottom="12dp"/>
+
+        <EditText
+            android:id="@+id/editTextEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Correo"
+            android:inputType="textEmailAddress"
+            android:background="@drawable/edittext_background"
+            android:padding="12dp"
+            android:layout_marginBottom="24dp"/>
+
+        <Button
+            android:id="@+id/btnEditar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Editar informacion"
+            android:backgroundTint="#2196F3"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/btnGuardar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Guardar"
+            android:backgroundTint="#4CAF50"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="12dp"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/Cambiarcontrasena"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/celeste"
+            android:text="Cambiar contraseña"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/Masinfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/celeste"
+            android:text="Mas información"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/logoutButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#F44336"
+            android:text="Cerrar sesión"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+</ScrollView>

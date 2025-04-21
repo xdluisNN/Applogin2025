@@ -39,12 +39,22 @@ class Cambiar_contrasena_Fragment : Fragment() {
     }
 
     private fun cambiarPassword() {
-        val actual = etPasswordActual.text.toString()
-        val nueva = etPasswordNueva.text.toString()
-        val confirmacion = etPasswordConfirmacion.text.toString()
+        val actual = etPasswordActual.text.toString().trim()
+        val nueva = etPasswordNueva.text.toString().trim()
+        val confirmacion = etPasswordConfirmacion.text.toString().trim()
 
-        if (actual.isEmpty() && nueva.isEmpty() && confirmacion.isEmpty()) {
-            Toast.makeText(requireContext(), "Completa todos los campos", Toast.LENGTH_SHORT).show()
+        if (actual.isEmpty()) {
+            etPasswordActual.error = "Campo obligatorio"
+            return
+        }
+
+        if (nueva.isEmpty()) {
+            etPasswordNueva.error = "Campo obligatorio"
+            return
+        }
+
+        if (confirmacion.isEmpty()) {
+            etPasswordConfirmacion.error = "Campo obligatorio"
             return
         }
 
@@ -56,7 +66,12 @@ class Cambiar_contrasena_Fragment : Fragment() {
         val user = auth.currentUser
         val email = user?.email
 
-        val credential = EmailAuthProvider.getCredential(email!!, actual)
+        if (user == null || email == null) {
+            Toast.makeText(requireContext(), "Usuario no autenticado", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val credential = EmailAuthProvider.getCredential(email, actual)
 
         user.reauthenticate(credential)
             .addOnSuccessListener {

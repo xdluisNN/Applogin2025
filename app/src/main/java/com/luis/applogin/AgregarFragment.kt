@@ -41,7 +41,6 @@ class AgregarFragment : Fragment() {
     private fun cargarFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
-            .addToBackStack(null)
             .commit()
     }
 }

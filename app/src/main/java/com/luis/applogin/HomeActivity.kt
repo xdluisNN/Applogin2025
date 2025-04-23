@@ -1,9 +1,12 @@
 package com.luis.applogin
 
+import android.app.AlertDialog
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.activity.OnBackPressedCallback
+
 
 enum class ProviderType{
     BASIC
@@ -44,6 +47,25 @@ class HomeActivity : AppCompatActivity() {
             openFragment(fragment)
             true
         }
+
+        // Manejo del botón atrás del sistema
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showExitConfirmation()
+            }
+        })
+
+    }
+
+    private fun showExitConfirmation() {
+        AlertDialog.Builder(this)
+            .setTitle("Salir de la app")
+            .setMessage("¿Estás seguro de que deseas salir?")
+            .setPositiveButton("Sí") { _, _ ->
+                finishAffinity() // Cierra completamente la app
+            }
+            .setNegativeButton("No", null)
+            .show()
     }
 
     private fun openFragment(fragment: Fragment) {

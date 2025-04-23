@@ -1,10 +1,12 @@
 package com.luis.applogin
 
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FieldValue
@@ -86,8 +88,25 @@ class Agregar_Paquete_Fragment : Fragment() {
         val empresaIndex = spinnerEmpresa.selectedItemPosition
         val trabajadorIndex = spinnerTrabajador.selectedItemPosition
 
-        if (nombrePaquete.isEmpty() && direccionPaquete.isEmpty() && empresaIndex == 0 && trabajadorIndex == 0) {
-            Toast.makeText(requireContext(), "Completa todos los campos", Toast.LENGTH_SHORT).show()
+        if (nombrePaquete.isEmpty()) {
+            etNombrePaquete.error = "Campo obligatorio"
+            etNombrePaquete.requestFocus()
+            return
+        }
+
+        if (direccionPaquete.isEmpty()) {
+            etDireccionPaquete.error = "Campo obligatorio"
+            etDireccionPaquete.requestFocus()
+            return
+        }
+
+        if (empresaIndex == 0) {
+            Toast.makeText(requireContext(), "Selecciona una empresa", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (trabajadorIndex == 0) {
+            Toast.makeText(requireContext(), "Selecciona un trabajador", Toast.LENGTH_SHORT).show()
             return
         }
 

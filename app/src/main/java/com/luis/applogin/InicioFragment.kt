@@ -24,21 +24,18 @@ class InicioFragment : Fragment() {
             // Navegar a Fragmento Paquetería
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, PaqueteriaFragment())
-                .addToBackStack(null)
                 .commit()
         }
 
         view.findViewById<LinearLayout>(R.id.btnAsociados).setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, AsociadosFragment())
-                .addToBackStack(null)
                 .commit()
         }
 
         view.findViewById<LinearLayout>(R.id.btnSistemas).setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, SistemasFragment())
-                .addToBackStack(null)
                 .commit()
         }
     }

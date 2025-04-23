@@ -27,6 +27,8 @@ class PerfilFragment : Fragment() {
     private lateinit var btnGuardar: Button
     private lateinit var btnEditar: Button
     private lateinit var logoutButton: Button
+    private lateinit var btnCambiarContrasena: Button
+    private lateinit var btnMasInformacion: Button
 
 
     private val db = FirebaseFirestore.getInstance()
@@ -48,12 +50,14 @@ class PerfilFragment : Fragment() {
         btnEditar = view.findViewById(R.id.btnEditar)
         btnGuardar = view.findViewById(R.id.btnGuardar)
         logoutButton = view.findViewById(R.id.logoutButton)
+        btnCambiarContrasena = view.findViewById(R.id.Cambiarcontrasena)
+        btnMasInformacion = view.findViewById(R.id.Masinfo)
+
 
         val btnCambiarContrasena = view.findViewById<Button>(R.id.Cambiarcontrasena)
         btnCambiarContrasena.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, Cambiar_contrasena_Fragment())
-                .addToBackStack(null)
                 .commit()
         }
 
@@ -96,6 +100,8 @@ class PerfilFragment : Fragment() {
         editTextTelefono.isEnabled = habilitar
         editTextEmail.isEnabled = habilitar
         btnGuardar.visibility = if (habilitar) View.VISIBLE else View.GONE
+        btnCambiarContrasena.visibility = if (habilitar) View.GONE else View.VISIBLE
+        btnMasInformacion.visibility = if (habilitar) View.GONE else View.VISIBLE
     }
 
     private fun cargarDatosTrabajador(uid: String) {

@@ -6,8 +6,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class PaqueteAdapter(private val listaPaquetes: List<Paquete>) :
-    RecyclerView.Adapter<PaqueteAdapter.PaqueteViewHolder>() {
+class PaqueteAdapter(
+    private val listaPaquetes: List<Paquete>,
+    private val onItemClick: (Paquete) -> Unit
+) : RecyclerView.Adapter<PaqueteAdapter.PaqueteViewHolder>() {
 
     class PaqueteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nombre: TextView = itemView.findViewById(R.id.txtNombrePaquete)
@@ -25,6 +27,10 @@ class PaqueteAdapter(private val listaPaquetes: List<Paquete>) :
         holder.nombre.text = paquete.nombrePaquete
         holder.direccion.text = paquete.direccion
         holder.estado.text = paquete.estado
+
+        holder.itemView.setOnClickListener {
+            onItemClick(paquete)
+        }
     }
 
     override fun getItemCount(): Int = listaPaquetes.size

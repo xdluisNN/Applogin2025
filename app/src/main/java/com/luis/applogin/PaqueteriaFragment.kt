@@ -36,10 +36,9 @@ class PaqueteriaFragment : Fragment() {
             val empresas = empresasSnapshot.documents.map { doc ->
                 val empresaId = doc.id
                 val nombre = doc.getString("nombre") ?: ""
-                val descripcion = doc.getString("descripcion") ?: ""
                 val imagenUrl = doc.getString("imagenUrl") ?: ""
 
-                empresaId to Empresa(nombre, descripcion, imagenUrl)
+                empresaId to Empresa(nombre, "", imagenUrl)
             }.toMap()
 
             db.collection("paquetes").get().addOnSuccessListener { paquetesSnapshot ->
@@ -53,10 +52,7 @@ class PaqueteriaFragment : Fragment() {
                         estado = doc.getString("estado") ?: "",
                         trabajadorAsignadoId = doc.getString("trabajadorAsignadoId") ?: ""
                     )
-                    if (!paquetesPorEmpresa.containsKey(empresaId)) {
-                        paquetesPorEmpresa[empresaId] = mutableListOf()
-                    }
-                    paquetesPorEmpresa[empresaId]?.add(paquete)
+                    paquetesPorEmpresa.getOrPut(empresaId) { mutableListOf() }.add(paquete)
                 }
 
                 val listaFinal = empresas.map { (empresaId, empresa) ->

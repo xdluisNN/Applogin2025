@@ -14,9 +14,7 @@ class EmpresaConPaquetesAdapter(private val lista: List<EmpresaConPaquetes>) :
 
     class EmpresaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nombre: TextView = itemView.findViewById(R.id.textNombre)
-        val descripcion: TextView = itemView.findViewById(R.id.textDescripcion)
         val imagen: ImageView = itemView.findViewById(R.id.imageEmpresa)
-        val textoNoImagen: TextView = itemView.findViewById(R.id.textNoImage)
         val recyclerPaquetes: RecyclerView = itemView.findViewById(R.id.recyclerPaquetes)
     }
 
@@ -31,15 +29,12 @@ class EmpresaConPaquetesAdapter(private val lista: List<EmpresaConPaquetes>) :
         val empresa = item.empresa
 
         holder.nombre.text = empresa.nombre
-        holder.descripcion.text = empresa.descripcion
 
         if (empresa.imagenUrl.isNotEmpty()) {
             holder.imagen.visibility = View.VISIBLE
-            holder.textoNoImagen.visibility = View.GONE
             Glide.with(holder.itemView.context).load(empresa.imagenUrl).into(holder.imagen)
         } else {
             holder.imagen.visibility = View.GONE
-            holder.textoNoImagen.visibility = View.VISIBLE
         }
 
         holder.recyclerPaquetes.layoutManager = LinearLayoutManager(holder.itemView.context)

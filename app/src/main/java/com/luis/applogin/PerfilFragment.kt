@@ -23,7 +23,6 @@ class PerfilFragment : Fragment() {
     private lateinit var editTextNombre: EditText
     private lateinit var editTextDireccion: EditText
     private lateinit var editTextTelefono: EditText
-    private lateinit var editTextEmail: EditText
     private lateinit var btnGuardar: Button
     private lateinit var btnEditar: Button
     private lateinit var logoutButton: Button
@@ -46,7 +45,6 @@ class PerfilFragment : Fragment() {
         editTextNombre = view.findViewById(R.id.editTextNombre)
         editTextDireccion = view.findViewById(R.id.editTextDireccion)
         editTextTelefono = view.findViewById(R.id.editTextTelefono)
-        editTextEmail = view.findViewById(R.id.editTextEmail)
         btnEditar = view.findViewById(R.id.btnEditar)
         btnGuardar = view.findViewById(R.id.btnGuardar)
         logoutButton = view.findViewById(R.id.logoutButton)
@@ -98,7 +96,6 @@ class PerfilFragment : Fragment() {
         editTextNombre.isEnabled = habilitar
         editTextDireccion.isEnabled = habilitar
         editTextTelefono.isEnabled = habilitar
-        editTextEmail.isEnabled = habilitar
         btnGuardar.visibility = if (habilitar) View.VISIBLE else View.GONE
         btnCambiarContrasena.visibility = if (habilitar) View.GONE else View.VISIBLE
         btnMasInformacion.visibility = if (habilitar) View.GONE else View.VISIBLE
@@ -111,7 +108,6 @@ class PerfilFragment : Fragment() {
                     editTextNombre.setText(documento.getString("nombre"))
                     editTextDireccion.setText(documento.getString("direccion"))
                     editTextTelefono.setText(documento.getString("telefono"))
-                    editTextEmail.setText(documento.getString("email"))
                 }
             }
     }
@@ -132,7 +128,6 @@ class PerfilFragment : Fragment() {
         val nombre = editTextNombre.text.toString().trim()
         val direccion = editTextDireccion.text.toString().trim()
         val telefono = editTextTelefono.text.toString().trim()
-        val email = editTextEmail.text.toString().trim()
 
         if (nombre.isEmpty()) {
             editTextNombre.error = "Campo obligatorio"
@@ -146,16 +141,11 @@ class PerfilFragment : Fragment() {
             editTextTelefono.error = "Campo obligatorio"
             return
         }
-        if (email.isEmpty()) {
-            editTextEmail.error = "Campo obligatorio"
-            return
-        }
 
         val datosActualizados = mapOf(
             "nombre" to nombre,
             "direccion" to direccion,
-            "telefono" to telefono,
-            "email" to email
+            "telefono" to telefono
         )
 
         uidActual?.let { uid ->

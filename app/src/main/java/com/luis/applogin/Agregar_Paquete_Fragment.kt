@@ -1,12 +1,10 @@
 package com.luis.applogin
 
-
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FieldValue
@@ -37,7 +35,19 @@ class Agregar_Paquete_Fragment : Fragment() {
         btnGuardarPaquete = view.findViewById(R.id.btnGuardarPaquete)
 
         cargarEmpresas()
-        cargarTrabajadores()
+
+        spinnerEmpresa.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (position > 0) {
+                    val empresaId = listaEmpresas[position - 1].first
+                    cargarTrabajadoresPorEmpresa(empresaId)
+                } else {
+                    limpiarSpinnerTrabajadores()
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
 
         btnGuardarPaquete.setOnClickListener {
             guardarPaquete()
@@ -63,13 +73,19 @@ class Agregar_Paquete_Fragment : Fragment() {
             }
     }
 
-    private fun cargarTrabajadores() {
+    private fun cargarTrabajadoresPorEmpresa(empresaId: String) {
         db.collection("trabajador")
-            .whereEqualTo("rol", "Empleado") // 🔥 Solo trabajadores
+            .whereEqualTo("empresaId", empresaId)
+            .whereEqualTo("rol", "Empleado")
             .get()
             .addOnSuccessListener { documentos ->
                 val nombres = mutableListOf("Selecciona un trabajador")
                 listaTrabajadores.clear()
+
+                if (documentos.isEmpty) {
+                    Toast.makeText(requireContext(), "No hay trabajadores para esta empresa", Toast.LENGTH_SHORT).show()
+                }
+
                 for (doc in documentos) {
                     val nombre = doc.getString("nombre") ?: continue
                     listaTrabajadores.add(doc.id to nombre)
@@ -80,6 +96,12 @@ class Agregar_Paquete_Fragment : Fragment() {
             .addOnFailureListener {
                 Toast.makeText(requireContext(), "Error al cargar trabajadores", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun limpiarSpinnerTrabajadores() {
+        listaTrabajadores.clear()
+        val nombres = mutableListOf("Selecciona un trabajador")
+        spinnerTrabajador.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, nombres)
     }
 
     private fun guardarPaquete() {

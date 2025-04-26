@@ -95,7 +95,7 @@ class PaqueteriaFragment : Fragment() {
         }
     }
 
-    // 🔄 Carga solo los paquetes del trabajador logueado y su empresa
+    // Carga solo los paquetes del trabajador logueado y su empresa
     private fun cargarDatosFiltradosParaTrabajador(uid: String, empresaId: String) {
         db.collection("empresas").document(empresaId).get().addOnSuccessListener { empresaDoc ->
             val nombreEmpresa = empresaDoc.getString("nombre") ?: ""

@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-class PaqueteriaFragment : Fragment() {
+class PaqueteriaFragment : Fragment(), OnPaqueteEntregadoListener {  // ✅ implementamos listener
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: EmpresaConPaquetesAdapter
@@ -19,6 +19,7 @@ class PaqueteriaFragment : Fragment() {
 
     private val mapaTrabajadores = mutableMapOf<String, String>()
     private val mapaEmpresas = mutableMapOf<String, Empresa>()
+    private var tipoUsuario: String = "Empleado"  // ✅ nuevo campo para saber tipo
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,10 +36,9 @@ class PaqueteriaFragment : Fragment() {
 
         val uid = auth.currentUser?.uid ?: return
 
-        // 🔍 Consultamos el rol del usuario logueado
         db.collection("trabajador").document(uid).get().addOnSuccessListener { doc ->
-            val rol = doc.getString("rol") ?: "Empleado" // Asume "Empleado" si no hay rol
-            if (rol == "Administrador") {
+            tipoUsuario = doc.getString("rol") ?: "Empleado"
+            if (tipoUsuario == "Administrador") {
                 cargarEmpresasYPaquetes()
             } else {
                 cargarDatosFiltradosParaTrabajador(uid, doc.getString("empresaId") ?: "")
@@ -46,7 +46,6 @@ class PaqueteriaFragment : Fragment() {
         }
     }
 
-    // 🔄 Carga todos los paquetes de todas las empresas
     private fun cargarEmpresasYPaquetes() {
         db.collection("trabajador").get().addOnSuccessListener { trabajadoresSnapshot ->
             for (doc in trabajadoresSnapshot) {
@@ -68,6 +67,9 @@ class PaqueteriaFragment : Fragment() {
 
                     for (doc in paquetesSnapshot) {
                         val empresaId = doc.getString("empresaId") ?: continue
+                        val estadoPaquete = doc.getString("estado") ?: ""
+                        if (estadoPaquete != "pendiente") continue
+
                         val timestamp = doc.getTimestamp("fechaRegistro")
                         val fechaRegistro = timestamp?.toDate()?.toString() ?: ""
                         val trabajadorId = doc.getString("trabajadorAsignadoId") ?: ""
@@ -75,7 +77,7 @@ class PaqueteriaFragment : Fragment() {
                         val paquete = Paquete(
                             nombrePaquete = doc.getString("nombrePaquete") ?: "",
                             direccion = doc.getString("Direccion") ?: "",
-                            estado = doc.getString("estado") ?: "",
+                            estado = estadoPaquete,
                             trabajadorAsignadoId = trabajadorId,
                             empresaId = empresaId,
                             fechaRegistro = fechaRegistro
@@ -88,14 +90,13 @@ class PaqueteriaFragment : Fragment() {
                         EmpresaConPaquetes(empresa, paquetes)
                     }
 
-                    adapter = EmpresaConPaquetesAdapter(listaFinal, mapaEmpresas, mapaTrabajadores)
+                    adapter = EmpresaConPaquetesAdapter(listaFinal, mapaEmpresas, mapaTrabajadores, this@PaqueteriaFragment)  // ✅ listener
                     recyclerView.adapter = adapter
                 }
             }
         }
     }
 
-    // Carga solo los paquetes del trabajador logueado y su empresa
     private fun cargarDatosFiltradosParaTrabajador(uid: String, empresaId: String) {
         db.collection("empresas").document(empresaId).get().addOnSuccessListener { empresaDoc ->
             val nombreEmpresa = empresaDoc.getString("nombre") ?: ""
@@ -112,22 +113,44 @@ class PaqueteriaFragment : Fragment() {
                     .whereEqualTo("trabajadorAsignadoId", uid)
                     .get()
                     .addOnSuccessListener { paquetesSnapshot ->
-                        val paquetes = paquetesSnapshot.map { docPaquete ->
-                            val fecha = docPaquete.getTimestamp("fechaRegistro")?.toDate()?.toString() ?: ""
-                            Paquete(
-                                nombrePaquete = docPaquete.getString("nombrePaquete") ?: "",
-                                direccion = docPaquete.getString("Direccion") ?: "",
-                                estado = docPaquete.getString("estado") ?: "",
-                                trabajadorAsignadoId = uid,
-                                empresaId = empresaId,
-                                fechaRegistro = fecha
-                            )
+                        val paquetes = paquetesSnapshot.mapNotNull { docPaquete ->
+                            val estadoPaquete = docPaquete.getString("estado") ?: ""
+                            if (estadoPaquete == "pendiente") {
+                                val fecha = docPaquete.getTimestamp("fechaRegistro")?.toDate()?.toString() ?: ""
+                                Paquete(
+                                    nombrePaquete = docPaquete.getString("nombrePaquete") ?: "",
+                                    direccion = docPaquete.getString("Direccion") ?: "",
+                                    estado = estadoPaquete,
+                                    trabajadorAsignadoId = uid,
+                                    empresaId = empresaId,
+                                    fechaRegistro = fecha
+                                )
+                            } else {
+                                null
+                            }
                         }
 
                         val listaFinal = listOf(EmpresaConPaquetes(empresa, paquetes))
-                        adapter = EmpresaConPaquetesAdapter(listaFinal, mapaEmpresas, mapaTrabajadores)
+                        adapter = EmpresaConPaquetesAdapter(listaFinal, mapaEmpresas, mapaTrabajadores, this@PaqueteriaFragment)  // ✅ listener
                         recyclerView.adapter = adapter
                     }
+            }
+        }
+    }
+
+    // ✅ Esta función se llama automáticamente cuando entregas un paquete
+    override fun onPaqueteEntregado() {
+        recargarDatos()
+    }
+
+    // ✅ Decide qué función recargar según tipo usuario
+    private fun recargarDatos() {
+        val uid = auth.currentUser?.uid ?: return
+        if (tipoUsuario == "Administrador") {
+            cargarEmpresasYPaquetes()
+        } else {
+            db.collection("trabajador").document(uid).get().addOnSuccessListener { doc ->
+                cargarDatosFiltradosParaTrabajador(uid, doc.getString("empresaId") ?: "")
             }
         }
     }

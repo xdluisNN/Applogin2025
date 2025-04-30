@@ -8,13 +8,15 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class EmpresaConPaquetesAdapter(
     private val lista: List<EmpresaConPaquetes>,
     private val empresas: Map<String, Empresa>,
-    private val trabajador: Map<String, String>
+    private val trabajador: Map<String, String>,
+    private val listener: OnPaqueteEntregadoListener
 ) : RecyclerView.Adapter<EmpresaConPaquetesAdapter.EmpresaViewHolder>() {
 
     class EmpresaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -61,7 +63,10 @@ class EmpresaConPaquetesAdapter(
             android.app.AlertDialog.Builder(context)
                 .setTitle("Detalles del Paquete")
                 .setMessage(mensaje)
-                .setPositiveButton("OK", null)
+                .setPositiveButton("Marcar como entregado") { _, _ ->
+                    marcarComoEntregado(paquete)
+                }
+                .setNegativeButton("Cancelar", null)
                 .show()
         }
     }
@@ -72,10 +77,33 @@ class EmpresaConPaquetesAdapter(
         return try {
             val formatoOriginal = SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH)
             val fecha = formatoOriginal.parse(fechaTexto)
-            val formatoNuevo = SimpleDateFormat("dd 'de' MMMM 'de' yyyy, hh:mm a", Locale("es", "ES"))
+            val formatoNuevo =
+                SimpleDateFormat("dd 'de' MMMM 'de' yyyy, hh:mm a", Locale("es", "ES"))
             fecha?.let { formatoNuevo.format(it) } ?: fechaTexto
         } catch (e: Exception) {
             fechaTexto // Si falla, regresamos el texto original
         }
     }
+
+    private fun marcarComoEntregado(paquete: Paquete) {
+        val db = FirebaseFirestore.getInstance()
+
+        // 🔄 Busca el documento que tenga el nombre del paquete, empresa y trabajador
+        db.collection("paquetes")
+            .whereEqualTo("nombrePaquete", paquete.nombrePaquete)
+            .whereEqualTo("empresaId", paquete.empresaId)
+            .whereEqualTo("trabajadorAsignadoId", paquete.trabajadorAsignadoId)
+            .get()
+            .addOnSuccessListener { documentos ->
+                for (doc in documentos) {
+                    db.collection("paquetes").document(doc.id)
+                        .update("estado", "entregado")
+                        .addOnSuccessListener {
+                            listener.onPaqueteEntregado()
+                        }
+                }
+            }
+    }
+
+
 }

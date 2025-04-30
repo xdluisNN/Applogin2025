@@ -6,9 +6,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.activity.OnBackPressedCallback
+import com.google.android.material.navigation.NavigationBarView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
-
-enum class ProviderType{
+enum class ProviderType {
     BASIC
 }
 
@@ -25,6 +27,28 @@ class HomeActivity : AppCompatActivity() {
         provider = intent.getStringExtra("provider") ?: ""
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+
+        // Ocultar "Agregar" por defecto
+        bottomNav.menu.findItem(R.id.nav_agregar).isVisible = false
+
+        // Forzar que solo se muestre el texto del ítem seleccionado
+        bottomNav.labelVisibilityMode = NavigationBarView.LABEL_VISIBILITY_SELECTED
+
+        // Verificar rol del usuario
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        currentUser?.uid?.let { uid ->
+            val db = FirebaseFirestore.getInstance()
+            db.collection("trabajador").document(uid).get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val rol = document.getString("rol")
+                        if (rol == "Administrador") {
+                            // Mostrar el ítem solo si es administrador
+                            bottomNav.menu.findItem(R.id.nav_agregar).isVisible = true
+                        }
+                    }
+                }
+        }
 
         // Cargar fragmento por defecto
         openFragment(InicioFragment())
@@ -54,7 +78,6 @@ class HomeActivity : AppCompatActivity() {
                 showExitConfirmation()
             }
         })
-
     }
 
     private fun showExitConfirmation() {

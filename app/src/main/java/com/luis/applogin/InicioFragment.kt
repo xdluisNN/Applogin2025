@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class InicioFragment : Fragment() {
 
@@ -33,12 +35,29 @@ class InicioFragment : Fragment() {
                 .commit()
         }
 
-        view.findViewById<LinearLayout>(R.id.btnSistemas).setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, SistemasFragment())
-                .commit()
+        val btnSistemas = view.findViewById<LinearLayout>(R.id.btnSistemas)
+
+        // Ocultar por defecto
+        btnSistemas.visibility = View.GONE
+
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        currentUser?.uid?.let { uid ->
+            val db = FirebaseFirestore.getInstance()
+            db.collection("trabajador").document(uid).get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val rol = document.getString("rol")
+                        if (rol == "Administrador") {
+                            // Mostrar y activar el botón solo si es administrador
+                            btnSistemas.visibility = View.VISIBLE
+                            btnSistemas.setOnClickListener {
+                                parentFragmentManager.beginTransaction()
+                                    .replace(R.id.fragment_container, SistemasFragment())
+                                    .commit()
+                            }
+                        }
+                    }
+                }
         }
     }
-
-
 }

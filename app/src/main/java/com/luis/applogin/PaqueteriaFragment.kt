@@ -75,6 +75,7 @@ class PaqueteriaFragment : Fragment(), OnPaqueteEntregadoListener {  // ✅ impl
                         val trabajadorId = doc.getString("trabajadorAsignadoId") ?: ""
 
                         val paquete = Paquete(
+                            uid = doc.id,
                             nombrePaquete = doc.getString("nombrePaquete") ?: "",
                             direccion = doc.getString("Direccion") ?: "",
                             estado = estadoPaquete,

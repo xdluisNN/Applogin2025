@@ -5,12 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Locale
+import android.app.AlertDialog
 
 class EmpresaConPaquetesAdapter(
     private val lista: List<EmpresaConPaquetes>,
@@ -60,11 +62,11 @@ class EmpresaConPaquetesAdapter(
                 Estado: ${paquete.estado}
             """.trimIndent()
 
-            android.app.AlertDialog.Builder(context)
+            AlertDialog.Builder(context)
                 .setTitle("Detalles del Paquete")
                 .setMessage(mensaje)
                 .setPositiveButton("Marcar como entregado") { _, _ ->
-                    marcarComoEntregado(paquete)
+                    mostrarAlertaConfirmacion(context, paquete)
                 }
                 .setNegativeButton("Cancelar", null)
                 .show()
@@ -85,10 +87,21 @@ class EmpresaConPaquetesAdapter(
         }
     }
 
-    private fun marcarComoEntregado(paquete: Paquete) {
+    // 🔔 Nueva función para mostrar confirmación antes de marcar como entregado
+    private fun mostrarAlertaConfirmacion(context: android.content.Context, paquete: Paquete) {
+        AlertDialog.Builder(context)
+            .setTitle("¿Confirmar entrega?")
+            .setMessage("¿Estás seguro de marcar este paquete como entregado?")
+            .setPositiveButton("Sí, confirmar") { _, _ ->
+                marcarComoEntregado(context, paquete)
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun marcarComoEntregado(context: android.content.Context, paquete: Paquete) {
         val db = FirebaseFirestore.getInstance()
 
-        // 🔄 Busca el documento que tenga el nombre del paquete, empresa y trabajador
         db.collection("paquetes")
             .whereEqualTo("nombrePaquete", paquete.nombrePaquete)
             .whereEqualTo("empresaId", paquete.empresaId)
@@ -99,11 +112,10 @@ class EmpresaConPaquetesAdapter(
                     db.collection("paquetes").document(doc.id)
                         .update("estado", "entregado")
                         .addOnSuccessListener {
+                            Toast.makeText(context, "Paquete marcado como entregado", Toast.LENGTH_SHORT).show()
                             listener.onPaqueteEntregado()
                         }
                 }
             }
     }
-
-
 }

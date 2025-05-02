@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-class PaqueteriaFragment : Fragment(), OnPaqueteEntregadoListener {  // ✅ implementamos listener
+class PaqueteriaFragment : Fragment(), OnPaqueteEntregadoListener {  //  implementamos listener
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: EmpresaConPaquetesAdapter
@@ -19,7 +19,7 @@ class PaqueteriaFragment : Fragment(), OnPaqueteEntregadoListener {  // ✅ impl
 
     private val mapaTrabajadores = mutableMapOf<String, String>()
     private val mapaEmpresas = mutableMapOf<String, Empresa>()
-    private var tipoUsuario: String = "Empleado"  // ✅ nuevo campo para saber tipo
+    private var tipoUsuario: String = "Empleado"  //  nuevo campo para saber tipo
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -91,7 +91,7 @@ class PaqueteriaFragment : Fragment(), OnPaqueteEntregadoListener {  // ✅ impl
                         EmpresaConPaquetes(empresa, paquetes)
                     }
 
-                    adapter = EmpresaConPaquetesAdapter(listaFinal, mapaEmpresas, mapaTrabajadores, this@PaqueteriaFragment)  // ✅ listener
+                    adapter = EmpresaConPaquetesAdapter(listaFinal, mapaEmpresas, mapaTrabajadores, this@PaqueteriaFragment, mostrarBotonEntregar = false)  //  listener
                     recyclerView.adapter = adapter
                 }
             }
@@ -132,7 +132,7 @@ class PaqueteriaFragment : Fragment(), OnPaqueteEntregadoListener {  // ✅ impl
                         }
 
                         val listaFinal = listOf(EmpresaConPaquetes(empresa, paquetes))
-                        adapter = EmpresaConPaquetesAdapter(listaFinal, mapaEmpresas, mapaTrabajadores, this@PaqueteriaFragment)  // ✅ listener
+                        adapter = EmpresaConPaquetesAdapter(listaFinal, mapaEmpresas, mapaTrabajadores, this@PaqueteriaFragment, mostrarBotonEntregar = true)  // ✅ listener
                         recyclerView.adapter = adapter
                     }
             }

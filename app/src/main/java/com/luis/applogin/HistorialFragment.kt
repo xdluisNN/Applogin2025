@@ -1,31 +1,28 @@
 package com.luis.applogin
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [HistorialFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class HistorialFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: EmpresaConPaquetesAdapter
+    private val db = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+
+    private val mapaTrabajadores = mutableMapOf<String, String>()
+    private val mapaEmpresas = mutableMapOf<String, Empresa>()
+
+    private val listenerVacio = object : OnPaqueteEntregadoListener {
+        override fun onPaqueteEntregado() {
+            // No hacer nada
         }
     }
 
@@ -33,27 +30,116 @@ class HistorialFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_historial, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment HistorialFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HistorialFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        recyclerView = view.findViewById(R.id.recyclerHistorial)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        val uid = auth.currentUser?.uid ?: return
+
+        db.collection("trabajador").document(uid).get().addOnSuccessListener { doc ->
+            val rol = doc.getString("rol") ?: "Empleado"
+            if (rol == "Administrador") {
+                cargarHistorialAdmin()
+            } else {
+                cargarHistorialTrabajador(uid, doc.getString("empresaId") ?: "")
+            }
+        }
+    }
+
+    private fun cargarHistorialAdmin() {
+        db.collection("trabajador").get().addOnSuccessListener { trabajadoresSnapshot ->
+            for (doc in trabajadoresSnapshot) {
+                val trabajadorId = doc.id
+                val nombreTrabajador = doc.getString("nombre") ?: ""
+                mapaTrabajadores[trabajadorId] = nombreTrabajador
+            }
+
+            db.collection("empresas").get().addOnSuccessListener { empresasSnapshot ->
+                for (doc in empresasSnapshot) {
+                    val empresaId = doc.id
+                    val nombre = doc.getString("nombre") ?: ""
+                    val imagenUrl = doc.getString("imagenUrl") ?: ""
+                    mapaEmpresas[empresaId] = Empresa(nombre, "", imagenUrl)
+                }
+
+                db.collection("paquetes").get().addOnSuccessListener { paquetesSnapshot ->
+                    val paquetesPorEmpresa = mutableMapOf<String, MutableList<Paquete>>()
+
+                    for (doc in paquetesSnapshot) {
+                        val estado = doc.getString("estado") ?: ""
+                        if (estado != "entregado") continue
+
+                        val empresaId = doc.getString("empresaId") ?: continue
+                        val timestamp = doc.getTimestamp("fechaRegistro")
+                        val fechaRegistro = timestamp?.toDate()?.toString() ?: ""
+                        val trabajadorId = doc.getString("trabajadorAsignadoId") ?: ""
+
+                        val paquete = Paquete(
+                            uid = doc.id,
+                            nombrePaquete = doc.getString("nombrePaquete") ?: "",
+                            direccion = doc.getString("Direccion") ?: "",
+                            estado = estado,
+                            trabajadorAsignadoId = trabajadorId,
+                            empresaId = empresaId,
+                            fechaRegistro = fechaRegistro
+                        )
+                        paquetesPorEmpresa.getOrPut(empresaId) { mutableListOf() }.add(paquete)
+                    }
+
+                    val listaFinal = mapaEmpresas.map { (empresaId, empresa) ->
+                        val paquetes = paquetesPorEmpresa[empresaId] ?: emptyList()
+                        EmpresaConPaquetes(empresa, paquetes)
+                    }
+
+                    adapter = EmpresaConPaquetesAdapter(listaFinal, mapaEmpresas, mapaTrabajadores, listenerVacio, mostrarBotonEntregar = false)
+                    recyclerView.adapter = adapter
                 }
             }
+        }
+    }
+
+    private fun cargarHistorialTrabajador(uid: String, empresaId: String) {
+        db.collection("empresas").document(empresaId).get().addOnSuccessListener { empresaDoc ->
+            val nombreEmpresa = empresaDoc.getString("nombre") ?: ""
+            val imagenUrl = empresaDoc.getString("imagenUrl") ?: ""
+            val empresa = Empresa(nombreEmpresa, "", imagenUrl)
+            mapaEmpresas[empresaId] = empresa
+
+            db.collection("trabajador").document(uid).get().addOnSuccessListener { trabajadorDoc ->
+                val nombreTrabajador = trabajadorDoc.getString("nombre") ?: "Sin nombre"
+                mapaTrabajadores[uid] = nombreTrabajador
+
+                db.collection("paquetes")
+                    .whereEqualTo("empresaId", empresaId)
+                    .whereEqualTo("trabajadorAsignadoId", uid)
+                    .get()
+                    .addOnSuccessListener { paquetesSnapshot ->
+                        val paquetes = paquetesSnapshot.mapNotNull { docPaquete ->
+                            val estado = docPaquete.getString("estado") ?: ""
+                            if (estado == "entregado") {
+                                val fecha = docPaquete.getTimestamp("fechaRegistro")?.toDate()?.toString() ?: ""
+                                Paquete(
+                                    uid = docPaquete.id,
+                                    nombrePaquete = docPaquete.getString("nombrePaquete") ?: "",
+                                    direccion = docPaquete.getString("Direccion") ?: "",
+                                    estado = estado,
+                                    trabajadorAsignadoId = uid,
+                                    empresaId = empresaId,
+                                    fechaRegistro = fecha
+                                )
+                            } else null
+                        }
+
+                        val listaFinal = listOf(EmpresaConPaquetes(empresa, paquetes))
+                        adapter = EmpresaConPaquetesAdapter(listaFinal, mapaEmpresas, mapaTrabajadores, listenerVacio, mostrarBotonEntregar = false)
+                        recyclerView.adapter = adapter
+                    }
+            }
+        }
     }
 }

@@ -18,7 +18,8 @@ class EmpresaConPaquetesAdapter(
     private val lista: List<EmpresaConPaquetes>,
     private val empresas: Map<String, Empresa>,
     private val trabajador: Map<String, String>,
-    private val listener: OnPaqueteEntregadoListener
+    private val listener: OnPaqueteEntregadoListener,
+    private val mostrarBotonEntregar: Boolean
 ) : RecyclerView.Adapter<EmpresaConPaquetesAdapter.EmpresaViewHolder>() {
 
     class EmpresaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -62,14 +63,18 @@ class EmpresaConPaquetesAdapter(
                 Estado: ${paquete.estado}
             """.trimIndent()
 
-            AlertDialog.Builder(context)
+            val builder = AlertDialog.Builder(context)
                 .setTitle("Detalles del Paquete")
                 .setMessage(mensaje)
-                .setPositiveButton("Marcar como entregado") { _, _ ->
+
+            if (mostrarBotonEntregar) {
+                builder.setPositiveButton("Marcar como entregado") { _, _ ->
                     mostrarAlertaConfirmacion(context, paquete)
                 }
-                .setNegativeButton("Cancelar", null)
-                .show()
+            }
+            builder.setNegativeButton("Cerrar", null)
+            builder.show()
+
         }
     }
 
@@ -87,7 +92,7 @@ class EmpresaConPaquetesAdapter(
         }
     }
 
-    // 🔔 Nueva función para mostrar confirmación antes de marcar como entregado
+    //  Nueva función para mostrar confirmación antes de marcar como entregado
     private fun mostrarAlertaConfirmacion(context: android.content.Context, paquete: Paquete) {
         AlertDialog.Builder(context)
             .setTitle("¿Confirmar entrega?")

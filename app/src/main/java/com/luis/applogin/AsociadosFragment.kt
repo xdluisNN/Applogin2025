@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,10 +18,6 @@ class AsociadosFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            val param1 = it.getString(ARG_PARAM1)
-            val param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
@@ -51,7 +46,9 @@ class AsociadosFragment : Fragment() {
                     val empresa = Empresa(
                         nombre = document.getString("nombre") ?: "",
                         descripcion = document.getString("descripcion") ?: "",
-                        imagenUrl = document.getString("imagenUrl") ?: ""
+                        imagenUrl = document.getString("imagenUrl") ?: "",
+                        inicioContrato = document.getString("inicioContrato") ?: "",
+                        finContrato = document.getString("finContrato") ?: ""
                     )
                     empresas.add(empresa)
                 }

@@ -7,7 +7,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.luis.applogin.R
 
 class EmpresaAdapter(private val listaEmpresas: List<Empresa>) :
     RecyclerView.Adapter<EmpresaAdapter.EmpresaViewHolder>() {
@@ -17,6 +16,8 @@ class EmpresaAdapter(private val listaEmpresas: List<Empresa>) :
         val descripcion: TextView = itemView.findViewById(R.id.textDescripcion)
         val imagen: ImageView = itemView.findViewById(R.id.imageEmpresa)
         val textoNoImagen: TextView = itemView.findViewById(R.id.textNoImage)
+        val inicioContrato: TextView = itemView.findViewById(R.id.textInicioContrato)
+        val finContrato: TextView = itemView.findViewById(R.id.textFinContrato)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmpresaViewHolder {
@@ -29,6 +30,8 @@ class EmpresaAdapter(private val listaEmpresas: List<Empresa>) :
         val empresa = listaEmpresas[position]
         holder.nombre.text = empresa.nombre
         holder.descripcion.text = empresa.descripcion
+        holder.inicioContrato.text = "Inicio: ${empresa.inicioContrato}"
+        holder.finContrato.text = "Fin: ${empresa.finContrato}"
 
         if (empresa.imagenUrl.isNotEmpty()) {
             holder.textoNoImagen.visibility = View.GONE

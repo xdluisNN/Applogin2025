@@ -2,6 +2,7 @@ package com.luis.applogin
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -21,7 +22,10 @@ class Agregar_Empresa_Fragment : Fragment() {
     private lateinit var btnRegistrarEmpresa: Button
     private lateinit var btnSeleccionarImagen: Button
     private lateinit var imagePreview: ImageView
+    private lateinit var editTextInicioContrato: EditText
+    private lateinit var editTextFinContrato: EditText
     private var imagenUri: Uri? = null
+    private var fechaInicioCalendar: Calendar? = null // ✅ Para validar fecha fin
 
     private val db = FirebaseFirestore.getInstance()
     private val storage = FirebaseStorage.getInstance()
@@ -37,13 +41,19 @@ class Agregar_Empresa_Fragment : Fragment() {
         btnRegistrarEmpresa = view.findViewById(R.id.btnRegistrarEmpresa)
         btnSeleccionarImagen = view.findViewById(R.id.btnSeleccionarImagen)
         imagePreview = view.findViewById(R.id.imagePreview)
+        editTextInicioContrato = view.findViewById(R.id.editTextInicioContrato)
+        editTextFinContrato = view.findViewById(R.id.editTextFinContrato)
+
+        // ✅ Ahora cada campo abre su respectivo datePicker
+        editTextInicioContrato.setOnClickListener { mostrarDatePickerInicio() }
+        editTextFinContrato.setOnClickListener { mostrarDatePickerFin() }
 
         btnSeleccionarImagen.setOnClickListener {
             seleccionarImagenDeGaleria()
         }
 
         btnRegistrarEmpresa.setOnClickListener {
-            if (validarCampos()){
+            if (validarCampos()) {
                 mostrarDialogoConfirmacionRegistro()
             }
         }
@@ -66,9 +76,60 @@ class Agregar_Empresa_Fragment : Fragment() {
         seleccionarImagenLauncher.launch(intent)
     }
 
+    // ✅ DatePicker para INICIO
+    private fun mostrarDatePickerInicio() {
+        val calendario = Calendar.getInstance()
+        val anio = calendario.get(Calendar.YEAR)
+        val mes = calendario.get(Calendar.MONTH)
+        val dia = calendario.get(Calendar.DAY_OF_MONTH)
+
+        val datePicker = DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
+            val fechaSeleccionada = String.format("%02d-%02d-%04d", dayOfMonth, month + 1, year)
+            editTextInicioContrato.setText(fechaSeleccionada)
+
+            // ✅ Guarda la fecha inicio para validaciones futuras
+            fechaInicioCalendar = Calendar.getInstance().apply {
+                set(year, month, dayOfMonth)
+            }
+            // ✅ Borra la fecha fin si ya estaba seleccionada (para forzar que la elija de nuevo)
+            editTextFinContrato.text.clear()
+        }, anio, mes, dia)
+
+        // ✅ Bloquea fechas pasadas
+        datePicker.datePicker.minDate = calendario.timeInMillis
+        datePicker.show()
+    }
+
+    // ✅ DatePicker para FIN
+    private fun mostrarDatePickerFin() {
+        if (fechaInicioCalendar == null) {
+            Toast.makeText(requireContext(), "Primero selecciona la fecha de inicio", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val calendario = Calendar.getInstance()
+        val anio = calendario.get(Calendar.YEAR)
+        val mes = calendario.get(Calendar.MONTH)
+        val dia = calendario.get(Calendar.DAY_OF_MONTH)
+
+        val datePicker = DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
+            val fechaSeleccionada = String.format("%02d-%02d-%04d", dayOfMonth, month + 1, year)
+            editTextFinContrato.setText(fechaSeleccionada)
+        }, anio, mes, dia)
+
+        // ✅ Solo permite fechas después del inicio
+        val minFinCalendar = fechaInicioCalendar!!.clone() as Calendar
+        minFinCalendar.add(Calendar.DAY_OF_MONTH, 1)
+        datePicker.datePicker.minDate = minFinCalendar.timeInMillis
+
+        datePicker.show()
+    }
+
     private fun subirImagenYRegistrarEmpresa() {
         val nombre = editTextNombre.text.toString().trim()
         val descripcion = editTextDescripcion.text.toString().trim()
+        val inicioContrato = editTextInicioContrato.text.toString().trim()
+        val finContrato = editTextFinContrato.text.toString().trim()
 
         val nombreArchivo = "empresas/${UUID.randomUUID()}.jpg"
         val referencia = storage.reference.child(nombreArchivo)
@@ -76,7 +137,7 @@ class Agregar_Empresa_Fragment : Fragment() {
         referencia.putFile(imagenUri!!)
             .addOnSuccessListener {
                 referencia.downloadUrl.addOnSuccessListener { uri ->
-                    guardarEmpresaFirestore(nombre, descripcion, uri.toString())
+                    guardarEmpresaFirestore(nombre, descripcion, inicioContrato, finContrato, uri.toString())
                 }
             }
             .addOnFailureListener {
@@ -98,6 +159,8 @@ class Agregar_Empresa_Fragment : Fragment() {
     private fun validarCampos(): Boolean {
         val nombre = editTextNombre.text.toString().trim()
         val descripcion = editTextDescripcion.text.toString().trim()
+        val inicioContrato = editTextInicioContrato.text.toString().trim()
+        val finContrato = editTextFinContrato.text.toString().trim()
 
         var valido = true
 
@@ -116,17 +179,27 @@ class Agregar_Empresa_Fragment : Fragment() {
             valido = false
         }
 
+        if (inicioContrato.isEmpty()) {
+            editTextInicioContrato.error = "Selecciona la fecha de inicio"
+            valido = false
+        }
+
+        if (finContrato.isEmpty()) {
+            editTextFinContrato.error = "Selecciona la fecha de fin"
+            valido = false
+        }
+
         return valido
     }
 
-
-
-    private fun guardarEmpresaFirestore(nombre: String, descripcion: String, imagenUrl: String) {
+    private fun guardarEmpresaFirestore(nombre: String, descripcion: String, inicioContrato: String, finContrato: String, imagenUrl: String) {
         val nuevaEmpresa = hashMapOf(
             "nombre" to nombre,
             "descripcion" to descripcion,
             "fechaRegistro" to Timestamp.now(),
-            "imagenUrl" to imagenUrl
+            "imagenUrl" to imagenUrl,
+            "inicioContrato" to inicioContrato,
+            "finContrato" to finContrato
         )
 
         db.collection("empresas")
@@ -135,8 +208,11 @@ class Agregar_Empresa_Fragment : Fragment() {
                 Toast.makeText(requireContext(), "Empresa registrada", Toast.LENGTH_SHORT).show()
                 editTextNombre.text.clear()
                 editTextDescripcion.text.clear()
+                editTextInicioContrato.text.clear()
+                editTextFinContrato.text.clear()
                 imagePreview.setImageResource(0)
                 imagenUri = null
+                fechaInicioCalendar = null // ✅ Reinicia fecha inicio después de registrar
             }
             .addOnFailureListener {
                 Toast.makeText(requireContext(), "Error al registrar empresa", Toast.LENGTH_SHORT).show()

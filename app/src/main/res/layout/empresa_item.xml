@@ -18,6 +18,24 @@
         android:text="Nombre de empresa" />
 
     <TextView
+        android:id="@+id/textInicioContrato"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:layout_marginTop="4dp"
+        android:text="Inicio: 2025-05-01" />
+
+    <TextView
+        android:id="@+id/textFinContrato"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:layout_marginTop="2dp"
+        android:text="Fin: 2025-12-31" />
+
+
+
+    <TextView
         android:id="@+id/textDescripcion"
         android:textColor="@color/black"
         android:layout_width="wrap_content"

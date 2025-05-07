@@ -17,6 +17,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var emailText: EditText
     private lateinit var contraText: EditText
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
@@ -27,7 +28,11 @@ class MainActivity : AppCompatActivity() {
         ingresarButton = findViewById(R.id.ingresarbutton)
         emailText = findViewById(R.id.emailText)
         contraText = findViewById(R.id.contraText)
-
+        val btnRegistrar = findViewById<Button>(R.id.btnRegistrar)
+        btnRegistrar.setOnClickListener {
+            val intent = Intent(this, RegistroActivity::class.java)
+            startActivity(intent)
+        }
         setup()
     }
 

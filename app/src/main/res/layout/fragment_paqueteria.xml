@@ -5,9 +5,24 @@
     android:padding="8dp"
     android:background="@drawable/fondo_de_app">
 
+    <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerEmpresasConPaquetes"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <!-- Mensaje de "No perteneces" -->
+    <TextView
+        android:id="@+id/textSinEmpresa"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No perteneces a una empresa todavía"
+        android:textSize="18sp"
+        android:textColor="#000000"
+        android:padding="16dp"
+        android:background="@drawable/fondo_redondeado"
+        android:elevation="6dp"
+        android:visibility="gone"
+        android:layout_gravity="center" />
 
 </FrameLayout>

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +15,8 @@ class PaqueteriaFragment : Fragment(), OnPaqueteEntregadoListener {  //  impleme
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: EmpresaConPaquetesAdapter
+    private lateinit var textSinEmpresa: TextView  // ✅ nuevo
+
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
@@ -34,19 +37,36 @@ class PaqueteriaFragment : Fragment(), OnPaqueteEntregadoListener {  //  impleme
         recyclerView = view.findViewById(R.id.recyclerEmpresasConPaquetes)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
+        textSinEmpresa = view.findViewById(R.id.textSinEmpresa)  // ✅ inicializamos
+
         val uid = auth.currentUser?.uid ?: return
 
         db.collection("trabajador").document(uid).get().addOnSuccessListener { doc ->
             tipoUsuario = doc.getString("rol") ?: "Empleado"
+            val empresaId = doc.getString("empresaId") ?: ""
+
             if (tipoUsuario == "Administrador") {
                 cargarEmpresasYPaquetes()
             } else {
-                cargarDatosFiltradosParaTrabajador(uid, doc.getString("empresaId") ?: "")
+                // ✅ Validamos si tiene empresa asignada
+                if (empresaId.isBlank()) {
+                    mostrarMensajeSinEmpresa()
+                } else {
+                    cargarDatosFiltradosParaTrabajador(uid, empresaId)
+                }
             }
         }
     }
 
+    private fun mostrarMensajeSinEmpresa() {
+        recyclerView.visibility = View.GONE
+        textSinEmpresa.visibility = View.VISIBLE  // ✅ Mostramos TextView que ya está en XML
+    }
+
     private fun cargarEmpresasYPaquetes() {
+        recyclerView.visibility = View.VISIBLE
+        textSinEmpresa.visibility = View.GONE  // ✅ Ocultamos mensaje
+
         db.collection("trabajador").get().addOnSuccessListener { trabajadoresSnapshot ->
             for (doc in trabajadoresSnapshot) {
                 val trabajadorId = doc.id
@@ -99,6 +119,9 @@ class PaqueteriaFragment : Fragment(), OnPaqueteEntregadoListener {  //  impleme
     }
 
     private fun cargarDatosFiltradosParaTrabajador(uid: String, empresaId: String) {
+        recyclerView.visibility = View.VISIBLE
+        textSinEmpresa.visibility = View.GONE  // ✅ Ocultamos mensaje
+
         db.collection("empresas").document(empresaId).get().addOnSuccessListener { empresaDoc ->
             val nombreEmpresa = empresaDoc.getString("nombre") ?: ""
             val imagenUrl = empresaDoc.getString("imagenUrl") ?: ""

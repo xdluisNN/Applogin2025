@@ -9,14 +9,13 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.firebase.auth.FirebaseAuth
-
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var ingresarButton: Button
     private lateinit var emailText: EditText
     private lateinit var contraText: EditText
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -44,9 +43,32 @@ class MainActivity : AppCompatActivity() {
                 FirebaseAuth.getInstance().signInWithEmailAndPassword(
                     emailText.text.toString(),
                     contraText.text.toString()
-                ).addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        home(it.result?.user?.email ?: "", ProviderType.BASIC)
+                ).addOnCompleteListener { authResult ->
+                    if (authResult.isSuccessful) {
+                        val user = authResult.result?.user
+                        user?.let {
+                            // Verificamos en Firestore si la cuenta está activa
+                            val db = FirebaseFirestore.getInstance()
+                            db.collection("trabajador").document(it.uid)
+                                .get()
+                                .addOnSuccessListener { document ->
+                                    if (document.exists()) {
+                                        val estado = document.getString("estado")
+                                        if (estado == "inactivo") {
+                                            FirebaseAuth.getInstance().signOut()
+                                            Toast.makeText(this, "Cuenta desactivada, contacte al administrador", Toast.LENGTH_LONG).show()
+                                        } else {
+                                            home(it.email ?: "", ProviderType.BASIC)
+                                        }
+                                    } else {
+                                        // Si no se encuentra documento, permitimos login
+                                        home(it.email ?: "", ProviderType.BASIC)
+                                    }
+                                }
+                                .addOnFailureListener {
+                                    showAlert()
+                                }
+                        }
                     } else {
                         showAlert()
                     }
@@ -79,5 +101,4 @@ class MainActivity : AppCompatActivity() {
         emailText.setText("")
         contraText.setText("")
     }
-
 }

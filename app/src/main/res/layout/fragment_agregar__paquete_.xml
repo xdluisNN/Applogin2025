@@ -1,57 +1,105 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/fondo_de_app">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/etNombrePaquete"
+        <!-- Encabezado -->
+        <LinearLayout
+            android:id="@+id/headerRegistrarPaquete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nombre del paquete" />
+            android:orientation="vertical"
+            android:padding="6dp"
+            android:background="@android:color/black"
+            android:gravity="center"
+            android:elevation="4dp">
 
-        <EditText
-            android:id="@+id/etDireccionPaquete"
+            <TextView
+                android:id="@+id/titleRegistrarPaquete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Registrar Paquete"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Contenedor de contenido -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Dirección del paquete"
-            android:layout_marginTop="16dp"/>
+            android:layout_margin="16dp"
+            android:background="@android:color/white"
+            android:elevation="8dp"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <TextView
-            android:id="@+id/tvEmpresa"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Empresa:"
-            android:layout_marginTop="16dp"/>
+            <EditText
+                android:id="@+id/etNombrePaquete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edittext_background"
+                android:hint="Nombre del paquete"
+                android:padding="12dp"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
 
-        <Spinner
-            android:id="@+id/spinnerEmpresa"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"/>
+            <EditText
+                android:id="@+id/etDireccionPaquete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/edittext_background"
+                android:hint="Dirección del paquete"
+                android:padding="12dp"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/tvTrabajador"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Trabajador:"/>
+            <TextView
+                android:id="@+id/tvEmpresa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Empresa:"
+                android:textColor="#333333"
+                android:textSize="16sp" />
 
-        <Spinner
-            android:id="@+id/spinnerTrabajador"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
+            <Spinner
+                android:id="@+id/spinnerEmpresa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
 
-        <Button
-            android:id="@+id/btnGuardarPaquete"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Guardar paquete"
-            android:layout_marginTop="24dp"/>
+            <TextView
+                android:id="@+id/tvTrabajador"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Trabajador:"
+                android:textColor="#333333"
+                android:textSize="16sp" />
+
+            <Spinner
+                android:id="@+id/spinnerTrabajador"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+
+            <Button
+                android:id="@+id/btnGuardarPaquete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:background="@drawable/bg_green"
+                android:padding="12dp"
+                android:text="Guardar paquete"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

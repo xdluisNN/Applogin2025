@@ -1,11 +1,13 @@
 package com.luis.applogin
 
 data class Trabajador(
-    var uid: String? = null,
-    var nombre: String? = null,
-    var direccion: String? = null,
-    var telefono: String? = null,
-    var email: String? = null,
-    var rol: String? = null,
-    var empresaId: String? = null
+    val uid: String? = null,
+    val nombre: String? = null,
+    val direccion: String? = null,
+    val telefono: String? = null,
+    val email: String? = null,
+    val rol: String? = null,
+    var empresaId: String? = null,
+    var estado: String? = null
 )
+

@@ -15,8 +15,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerSinEmpresa"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginBottom="16dp"/>
+        android:layout_height="243dp"
+        android:layout_marginBottom="16dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -28,5 +28,5 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerConEmpresa"
         android:layout_width="match_parent"
-        android:layout_height="200dp"/>
+        android:layout_height="266dp" />
 </LinearLayout>

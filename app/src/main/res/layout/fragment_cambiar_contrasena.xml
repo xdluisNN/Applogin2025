@@ -1,33 +1,92 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:orientation="vertical">
+    android:background="@drawable/fondo_de_app">
 
-    <EditText
-        android:id="@+id/etPasswordActual"
+
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Contraseña actual"
-        android:inputType="textPassword" />
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:background="@drawable/bg_card"
+        android:layout_marginTop="100dp"
+        android:gravity="center_horizontal">
 
-    <EditText
-        android:id="@+id/etPasswordNueva"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Nueva contraseña"
-        android:inputType="textPassword" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="     Cambiar contraseña:"
+            android:textColor="#020202"
+            android:textSize="30dp"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Introduzca su nueva contraseña y repítala."
+            android:textColor="#020202"
+            android:textSize="18sp"
+            android:layout_marginTop="16dp" />
+
+
+        <EditText
+            android:id="@+id/etPasswordActual"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:hint="Contraseña actual"
+            android:inputType="textPassword" />
+
+        <EditText
+            android:id="@+id/etPasswordNueva"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:hint="Nueva contraseña"
+            android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/etPasswordConfirmacion"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="65dp"
         android:hint="Confirmar nueva contraseña"
         android:inputType="textPassword" />
 
-    <Button
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="-El tamaño mínimo es 10 caracteres."
+            android:textColor="#020202"
+            android:textSize="15sp"
+            android:layout_marginTop="1dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="-Al menos 8 letras y 2 números son obligatorios."
+            android:textColor="#020202"
+            android:textSize="15sp"
+            android:layout_marginTop="1dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="-Evita las palabras comunes."
+            android:textColor="#000000"
+            android:textSize="15sp"
+            android:layout_marginTop="1dp" />
+
+
+        <Button
         android:id="@+id/btnCambiarPassword"
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Cambiar contraseña" />
-</LinearLayout>
+
+
+
+
+    </LinearLayout>
+    </ScrollView>
+

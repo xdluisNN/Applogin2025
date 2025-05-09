@@ -17,6 +17,13 @@ class Agregar_Empleado_Fragment : Fragment() {
 
     private val db = FirebaseFirestore.getInstance()
 
+    private val empleadosSinEmpresa = mutableListOf<Trabajador>()
+    private val empleadosConEmpresa = mutableListOf<Trabajador>()
+    private val listaEmpresas = mutableListOf<Pair<String, String>>()
+
+    private lateinit var adapterSinEmpresa: TrabajadorAdapter
+    private lateinit var adapterConEmpresa: TrabajadorAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -26,45 +33,74 @@ class Agregar_Empleado_Fragment : Fragment() {
         recyclerSinEmpresa = view.findViewById(R.id.recyclerSinEmpresa)
         recyclerConEmpresa = view.findViewById(R.id.recyclerConEmpresa)
 
-        obtenerYMostrarTrabajadores()
+        recyclerSinEmpresa.layoutManager = LinearLayoutManager(context)
+        recyclerConEmpresa.layoutManager = LinearLayoutManager(context)
+
+        obtenerYMostrarDatos()
 
         return view
     }
 
-    private fun obtenerYMostrarTrabajadores() {
-        db.collection("trabajador")
-            .get()
-            .addOnSuccessListener { result ->
-                val empleadosSinEmpresa = mutableListOf<Trabajador>()
-                val empleadosConEmpresa = mutableListOf<Trabajador>()
-
-                for (document in result) {
-                    val trabajador = document.toObject(Trabajador::class.java)
-
-                    if (trabajador.empresaId.isNullOrEmpty()) {
-                        empleadosSinEmpresa.add(trabajador)
-                    } else {
-                        empleadosConEmpresa.add(trabajador)
-                    }
+    private fun obtenerYMostrarDatos() {
+        db.collection("empresas").get()
+            .addOnSuccessListener { empresaDocs ->
+                listaEmpresas.clear()
+                for (doc in empresaDocs) {
+                    val id = doc.id
+                    val nombre = doc.getString("nombre") ?: "Sin nombre"
+                    listaEmpresas.add(Pair(id, nombre))
                 }
 
-                llenarTablaSinEmpresa(empleadosSinEmpresa)
-                llenarTablaConEmpresa(empleadosConEmpresa)
-            }
-            .addOnFailureListener { exception ->
-                Log.w("Firestore", "Error obteniendo documentos: ", exception)
+                // Ahora los empleados
+                db.collection("trabajador")
+                    .get()
+                    .addOnSuccessListener { result ->
+                        empleadosSinEmpresa.clear()
+                        empleadosConEmpresa.clear()
+
+                        for (document in result) {
+                            val trabajador = document.toObject(Trabajador::class.java)
+
+                            if (trabajador.empresaId.isNullOrEmpty()) {
+                                empleadosSinEmpresa.add(trabajador)
+                            } else {
+                                empleadosConEmpresa.add(trabajador)
+                            }
+                        }
+
+                        configurarAdapters()
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.w("Firestore", "Error obteniendo trabajadores: ", exception)
+                    }
             }
     }
 
-    private fun llenarTablaSinEmpresa(lista: List<Trabajador>) {
-        val adapter = TrabajadorAdapter(lista)
-        recyclerSinEmpresa.layoutManager = LinearLayoutManager(context)
-        recyclerSinEmpresa.adapter = adapter
+    private fun configurarAdapters() {
+        adapterSinEmpresa = TrabajadorAdapter(empleadosSinEmpresa, listaEmpresas) { trabajador, empresaId ->
+            asignarEmpresa(trabajador, empresaId)
+        }
+
+        adapterConEmpresa = TrabajadorAdapter(empleadosConEmpresa, emptyList()) { _, _ -> }
+
+        recyclerSinEmpresa.adapter = adapterSinEmpresa
+        recyclerConEmpresa.adapter = adapterConEmpresa
     }
 
-    private fun llenarTablaConEmpresa(lista: List<Trabajador>) {
-        val adapter = TrabajadorAdapter(lista)
-        recyclerConEmpresa.layoutManager = LinearLayoutManager(context)
-        recyclerConEmpresa.adapter = adapter
+    private fun asignarEmpresa(trabajador: Trabajador, empresaId: String) {
+        db.collection("trabajador").document(trabajador.uid ?: "")
+            .update("empresaId", empresaId)
+            .addOnSuccessListener {
+                // Actualiza listas visualmente
+                trabajador.empresaId = empresaId
+                empleadosSinEmpresa.remove(trabajador)
+                empleadosConEmpresa.add(trabajador)
+
+                adapterSinEmpresa.notifyDataSetChanged()
+                adapterConEmpresa.notifyDataSetChanged()
+            }
+            .addOnFailureListener {
+                Log.e("Firestore", "Error al asignar empresa", it)
+            }
     }
 }

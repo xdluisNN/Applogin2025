@@ -26,6 +26,7 @@ class EmpresaConPaquetesAdapter(
         val nombre: TextView = itemView.findViewById(R.id.textNombre)
         val imagen: ImageView = itemView.findViewById(R.id.imageEmpresa)
         val recyclerPaquetes: RecyclerView = itemView.findViewById(R.id.recyclerPaquetes)
+        val textSinPaquetes: TextView = itemView.findViewById(R.id.textSinPaquetes)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmpresaViewHolder {
@@ -47,14 +48,20 @@ class EmpresaConPaquetesAdapter(
             holder.imagen.visibility = View.GONE
         }
 
-        holder.recyclerPaquetes.layoutManager = LinearLayoutManager(holder.itemView.context)
-        holder.recyclerPaquetes.adapter = PaqueteAdapter(item.paquetes) { paquete ->
-            val context = holder.itemView.context
-            val nombreEmpresa = empresas[paquete.empresaId]?.nombre ?: "Empresa desconocida"
-            val nombreTrabajador = trabajador[paquete.trabajadorAsignadoId] ?: "No asignado"
-            val fechaFormateada = formatearFecha(paquete.fechaRegistro)
+        if (item.paquetes.isEmpty()) {
+            holder.recyclerPaquetes.visibility = View.GONE
+            holder.textSinPaquetes.visibility = View.VISIBLE
+        } else {
+            holder.recyclerPaquetes.visibility = View.VISIBLE
+            holder.textSinPaquetes.visibility = View.GONE
+            holder.recyclerPaquetes.layoutManager = LinearLayoutManager(holder.itemView.context)
+            holder.recyclerPaquetes.adapter = PaqueteAdapter(item.paquetes) { paquete ->
+                val context = holder.itemView.context
+                val nombreEmpresa = empresas[paquete.empresaId]?.nombre ?: "Empresa desconocida"
+                val nombreTrabajador = trabajador[paquete.trabajadorAsignadoId] ?: "No asignado"
+                val fechaFormateada = formatearFecha(paquete.fechaRegistro)
 
-            val mensaje = """
+                val mensaje = """
                 Nombre: ${paquete.nombrePaquete}
                 Dirección: ${paquete.direccion}
                 Empresa: $nombreEmpresa
@@ -63,21 +70,21 @@ class EmpresaConPaquetesAdapter(
                 Estado: ${paquete.estado}
             """.trimIndent()
 
-            val builder = AlertDialog.Builder(context)
-                .setTitle("Detalles del Paquete")
-                .setMessage(mensaje)
+                val builder = AlertDialog.Builder(context)
+                    .setTitle("Detalles del Paquete")
+                    .setMessage(mensaje)
 
-            if (mostrarBotonEntregar) {
-                builder.setPositiveButton("Marcar como entregado") { _, _ ->
-                    mostrarAlertaConfirmacion(context, paquete)
+                if (mostrarBotonEntregar) {
+                    builder.setPositiveButton("Marcar como entregado") { _, _ ->
+                        mostrarAlertaConfirmacion(context, paquete)
+                    }
                 }
+                builder.setNegativeButton("Cerrar", null)
+                builder.show()
             }
-            builder.setNegativeButton("Cerrar", null)
-            builder.show()
-
         }
     }
-
+    
     override fun getItemCount(): Int = lista.size
 
     private fun formatearFecha(fechaTexto: String): String {

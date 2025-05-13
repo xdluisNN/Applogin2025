@@ -1,5 +1,6 @@
 package com.luis.applogin
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,44 +32,67 @@ class TrabajadorAdapter(
         private val txtEmail: TextView = itemView.findViewById(R.id.txtEmail)
         private val spinnerEmpresas: Spinner = itemView.findViewById(R.id.spinnerEmpresas)
         private val btnAsignar: Button = itemView.findViewById(R.id.btnAsignar)
-        private val btnEstado: Button = itemView.findViewById(R.id.btnEstado) // Botón nuevo
+        private val btnEstado: Button = itemView.findViewById(R.id.btnEstado)
 
         fun bind(trabajador: Trabajador) {
             txtNombre.text = trabajador.nombre
             txtEmail.text = trabajador.email
 
-            // Llenar Spinner solo si no tiene empresa asignada
+            // Spinner para asignar empresa
             if (trabajador.empresaId.isNullOrEmpty()) {
                 spinnerEmpresas.visibility = View.VISIBLE
                 btnAsignar.visibility = View.VISIBLE
 
-                val nombresEmpresas = listaEmpresas.map { it.second }
+                val nombresEmpresas = mutableListOf("Seleccione una empresa")
+                nombresEmpresas.addAll(listaEmpresas.map { it.second })
                 val adapter = ArrayAdapter(itemView.context, android.R.layout.simple_spinner_item, nombresEmpresas)
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spinnerEmpresas.adapter = adapter
 
                 btnAsignar.setOnClickListener {
                     val seleccion = spinnerEmpresas.selectedItemPosition
-                    val empresaId = listaEmpresas[seleccion].first
-                    onAsignarEmpresa(trabajador, empresaId)
+                    if (seleccion == 0) {
+                        Toast.makeText(itemView.context, "Por favor seleccione una empresa válida", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val empresaId = listaEmpresas[seleccion - 1].first
+                        val empresaNombre = listaEmpresas[seleccion - 1].second
+                        AlertDialog.Builder(itemView.context)
+                            .setTitle("Confirmar asignación")
+                            .setMessage("¿Deseas asignar a ${trabajador.nombre} a la empresa \"$empresaNombre\"?")
+                            .setPositiveButton("Sí") { _, _ ->
+                                onAsignarEmpresa(trabajador, empresaId)
+                                Toast.makeText(itemView.context, "Empresa asignada exitosamente", Toast.LENGTH_SHORT).show()
+                            }
+                            .setNegativeButton("Cancelar", null)
+                            .show()
+                    }
                 }
             } else {
                 spinnerEmpresas.visibility = View.GONE
                 btnAsignar.visibility = View.GONE
             }
 
-            // Botón Activar/Desactivar cuenta
+            // Activar/Desactivar cuenta con confirmación
             val estadoActual = trabajador.estado ?: "activo"
             btnEstado.text = if (estadoActual == "activo") "Desactivar Cuenta" else "Activar Cuenta"
 
             btnEstado.setOnClickListener {
                 val nuevoEstado = if (estadoActual == "activo") "inactivo" else "activo"
-                trabajador.uid?.let { uid ->
-                    actualizarEstadoCuenta(uid, nuevoEstado) {
-                        trabajador.estado = nuevoEstado  // Cambiar estado en la lista local
-                        notifyItemChanged(adapterPosition)  // Refrescar visualmente el item
+                val accion = if (nuevoEstado == "activo") "activar" else "desactivar"
+
+                AlertDialog.Builder(itemView.context)
+                    .setTitle("Confirmar acción")
+                    .setMessage("¿Estás seguro de que deseas $accion la cuenta de ${trabajador.nombre}?")
+                    .setPositiveButton("Sí") { _, _ ->
+                        trabajador.uid?.let { uid ->
+                            actualizarEstadoCuenta(uid, nuevoEstado) {
+                                trabajador.estado = nuevoEstado
+                                notifyItemChanged(adapterPosition)
+                            }
+                        }
                     }
-                }
+                    .setNegativeButton("Cancelar", null)
+                    .show()
             }
         }
 
@@ -85,6 +109,5 @@ class TrabajadorAdapter(
                     Toast.makeText(itemView.context, "Error al cambiar estado", Toast.LENGTH_SHORT).show()
                 }
         }
-
     }
 }

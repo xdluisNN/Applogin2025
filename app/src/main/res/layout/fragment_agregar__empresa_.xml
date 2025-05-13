@@ -111,13 +111,30 @@
                     android:textColor="@android:color/black"
                     android:textSize="16sp" />
 
-                <ImageView
-                    android:id="@+id/imagePreview"
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:layout_marginTop="16dp"
-                    android:scaleType="centerCrop"
-                    android:background="@android:color/darker_gray" />
+                    android:layout_marginTop="16dp">
+
+                    <ImageView
+                        android:id="@+id/imagePreview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:background="@android:color/darker_gray" />
+
+                    <ImageButton
+                        android:id="@+id/btnEliminarImagen"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="end|top"
+                        android:layout_margin="8dp"
+                        android:background="@android:color/transparent"
+                        android:src="@android:drawable/ic_delete"
+                        android:contentDescription="Eliminar imagen"
+                        android:visibility="gone"
+                        />
+                </FrameLayout>
 
                 <Button
                     android:id="@+id/btnSeleccionarImagen"

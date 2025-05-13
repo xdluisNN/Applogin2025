@@ -24,8 +24,10 @@ class Agregar_Empresa_Fragment : Fragment() {
     private lateinit var imagePreview: ImageView
     private lateinit var editTextInicioContrato: EditText
     private lateinit var editTextFinContrato: EditText
+    private lateinit var btnEliminarImagen: ImageButton
+
     private var imagenUri: Uri? = null
-    private var fechaInicioCalendar: Calendar? = null // ✅ Para validar fecha fin
+    private var fechaInicioCalendar: Calendar? = null
 
     private val db = FirebaseFirestore.getInstance()
     private val storage = FirebaseStorage.getInstance()
@@ -43,8 +45,9 @@ class Agregar_Empresa_Fragment : Fragment() {
         imagePreview = view.findViewById(R.id.imagePreview)
         editTextInicioContrato = view.findViewById(R.id.editTextInicioContrato)
         editTextFinContrato = view.findViewById(R.id.editTextFinContrato)
+        btnEliminarImagen = view.findViewById(R.id.btnEliminarImagen)
 
-        // ✅ Ahora cada campo abre su respectivo datePicker
+
         editTextInicioContrato.setOnClickListener { mostrarDatePickerInicio() }
         editTextFinContrato.setOnClickListener { mostrarDatePickerFin() }
 
@@ -58,6 +61,12 @@ class Agregar_Empresa_Fragment : Fragment() {
             }
         }
 
+        btnEliminarImagen.setOnClickListener {
+            imagenUri = null
+            imagePreview.setImageDrawable(null)
+            btnEliminarImagen.visibility = View.GONE
+        }
+
         return view
     }
 
@@ -66,6 +75,7 @@ class Agregar_Empresa_Fragment : Fragment() {
             if (it.resultCode == Activity.RESULT_OK) {
                 imagenUri = it.data?.data
                 imagePreview.setImageURI(imagenUri)
+                btnEliminarImagen.visibility = View.VISIBLE
             }
         }
 
@@ -76,7 +86,7 @@ class Agregar_Empresa_Fragment : Fragment() {
         seleccionarImagenLauncher.launch(intent)
     }
 
-    // ✅ DatePicker para INICIO
+
     private fun mostrarDatePickerInicio() {
         val calendario = Calendar.getInstance()
         val anio = calendario.get(Calendar.YEAR)
@@ -87,20 +97,20 @@ class Agregar_Empresa_Fragment : Fragment() {
             val fechaSeleccionada = String.format("%02d-%02d-%04d", dayOfMonth, month + 1, year)
             editTextInicioContrato.setText(fechaSeleccionada)
 
-            // ✅ Guarda la fecha inicio para validaciones futuras
+
             fechaInicioCalendar = Calendar.getInstance().apply {
                 set(year, month, dayOfMonth)
             }
-            // ✅ Borra la fecha fin si ya estaba seleccionada (para forzar que la elija de nuevo)
+
             editTextFinContrato.text.clear()
         }, anio, mes, dia)
 
-        // ✅ Bloquea fechas pasadas
+
         datePicker.datePicker.minDate = calendario.timeInMillis
         datePicker.show()
     }
 
-    // ✅ DatePicker para FIN
+
     private fun mostrarDatePickerFin() {
         if (fechaInicioCalendar == null) {
             Toast.makeText(requireContext(), "Primero selecciona la fecha de inicio", Toast.LENGTH_SHORT).show()
@@ -117,7 +127,7 @@ class Agregar_Empresa_Fragment : Fragment() {
             editTextFinContrato.setText(fechaSeleccionada)
         }, anio, mes, dia)
 
-        // ✅ Solo permite fechas después del inicio
+
         val minFinCalendar = fechaInicioCalendar!!.clone() as Calendar
         minFinCalendar.add(Calendar.DAY_OF_MONTH, 1)
         datePicker.datePicker.minDate = minFinCalendar.timeInMillis
@@ -212,7 +222,8 @@ class Agregar_Empresa_Fragment : Fragment() {
                 editTextFinContrato.text.clear()
                 imagePreview.setImageResource(0)
                 imagenUri = null
-                fechaInicioCalendar = null // ✅ Reinicia fecha inicio después de registrar
+                fechaInicioCalendar = null
+                btnEliminarImagen.visibility = View.GONE
             }
             .addOnFailureListener {
                 Toast.makeText(requireContext(), "Error al registrar empresa", Toast.LENGTH_SHORT).show()

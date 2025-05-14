@@ -1,5 +1,6 @@
 package com.luis.applogin
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -51,9 +52,8 @@ class InicioFragment : Fragment() {
                             // Mostrar y activar el botón solo si es administrador
                             btnSistemas.visibility = View.VISIBLE
                             btnSistemas.setOnClickListener {
-                                parentFragmentManager.beginTransaction()
-                                    .replace(R.id.fragment_container, SistemasFragment())
-                                    .commit()
+                                val intent = Intent(requireContext(), Sistema::class.java)
+                                startActivity(intent)
                             }
                         }
                     }

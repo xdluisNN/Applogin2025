@@ -18,28 +18,38 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone">
-
-        <EditText
-            android:id="@+id/edtTx"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp" />
+        android:visibility="gone"
+        android:padding="16dp">
 
         <Button
-            android:id="@+id/buttonSend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:text="Enviar" />
-
-        <TextView
-            android:id="@+id/consola"
+            android:id="@+id/button1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="" />
+            android:text="1 - Activar modo Bluetooth" />
+
+        <Button
+            android:id="@+id/buttonA"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="A - Iniciar sistema" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="2 - Pausar sistema" />
+
+        <Button
+            android:id="@+id/button0"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="0 - Resetear sistema" />
+
+        <Button
+            android:id="@+id/buttonD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="D - Desconectar Bluetooth" />
+
     </LinearLayout>
 </LinearLayout>

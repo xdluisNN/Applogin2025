@@ -19,8 +19,8 @@ import com.luis.applogin.databinding.ActivitySistemaBinding
 class Sistema : AppCompatActivity() {
 
     private lateinit var binding: ActivitySistemaBinding
-    lateinit var blue: BluJhr
-    var devicesBluetooth = ArrayList<String>()
+    private lateinit var blue: BluJhr
+    private var devicesBluetooth = ArrayList<String>()
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +36,6 @@ class Sistema : AppCompatActivity() {
             insets
         }
 
-        // Verificar si el dispositivo tiene Bluetooth
         val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         if (bluetoothAdapter == null) {
             Toast.makeText(this, "Este dispositivo no tiene Bluetooth", Toast.LENGTH_LONG).show()
@@ -44,11 +43,9 @@ class Sistema : AppCompatActivity() {
             return
         }
 
-        // Inicializar BluJhr
         blue = BluJhr(this)
         blue.onBluetooth()
 
-        // Al seleccionar un dispositivo
         binding.listDeviceBluetooth.setOnItemClickListener { _, _, i, _ ->
             if (devicesBluetooth.isNotEmpty()) {
                 blue.connect(devicesBluetooth[i])
@@ -81,16 +78,30 @@ class Sistema : AppCompatActivity() {
             }
         }
 
-        binding.buttonSend.setOnClickListener {
-            blue.bluTx(binding.edtTx.text.toString())
+        // Botones de control
+        binding.button1.setOnClickListener {
+            blue.bluTx("1")
         }
 
-        binding.buttonSend.setOnLongClickListener {
+        binding.buttonA.setOnClickListener {
+            blue.bluTx("a")
+        }
+
+        binding.button2.setOnClickListener {
+            blue.bluTx("2")
+        }
+
+        binding.button0.setOnClickListener {
+            blue.bluTx("0")
+        }
+
+        binding.buttonD.setOnClickListener {
             blue.closeConnection()
-            true
+            binding.listDeviceBluetooth.visibility = View.VISIBLE
+            binding.viewConn.visibility = View.GONE
         }
 
-        // Pedir permisos
+        // Permisos
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             requestPermissions(
                 arrayOf(
@@ -145,7 +156,7 @@ class Sistema : AppCompatActivity() {
     private fun rxReceived() {
         blue.loadDateRx(object : BluJhr.ReceivedData {
             override fun rxDate(rx: String) {
-                binding.consola.text = binding.consola.text.toString() + rx
+                Toast.makeText(applicationContext, "Respuesta: $rx", Toast.LENGTH_SHORT).show()
             }
         })
     }

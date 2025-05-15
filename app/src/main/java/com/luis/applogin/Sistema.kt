@@ -56,6 +56,7 @@ class Sistema : AppCompatActivity() {
                                 Toast.makeText(applicationContext, "Conexión exitosa", Toast.LENGTH_SHORT).show()
                                 binding.listDeviceBluetooth.visibility = View.GONE
                                 binding.viewConn.visibility = View.VISIBLE
+                                binding.descripcion.visibility = View.VISIBLE
                                 rxReceived()
                             }
 
@@ -71,6 +72,7 @@ class Sistema : AppCompatActivity() {
                                 Toast.makeText(applicationContext, "Desconectado", Toast.LENGTH_SHORT).show()
                                 binding.listDeviceBluetooth.visibility = View.VISIBLE
                                 binding.viewConn.visibility = View.GONE
+                                binding.descripcion.visibility = View.GONE
                             }
                         }
                     }
@@ -79,26 +81,16 @@ class Sistema : AppCompatActivity() {
         }
 
         // Botones de control
-        binding.button1.setOnClickListener {
-            blue.bluTx("1")
-        }
-
-        binding.buttonA.setOnClickListener {
-            blue.bluTx("a")
-        }
-
-        binding.button2.setOnClickListener {
-            blue.bluTx("2")
-        }
-
-        binding.button0.setOnClickListener {
-            blue.bluTx("0")
-        }
+        binding.button1.setOnClickListener { blue.bluTx("1") }
+        binding.buttonA.setOnClickListener { blue.bluTx("a") }
+        binding.button2.setOnClickListener { blue.bluTx("2") }
+        binding.button0.setOnClickListener { blue.bluTx("0") }
 
         binding.buttonD.setOnClickListener {
             blue.closeConnection()
             binding.listDeviceBluetooth.visibility = View.VISIBLE
             binding.viewConn.visibility = View.GONE
+            binding.descripcion.visibility = View.GONE
         }
 
         // Permisos
@@ -107,8 +99,7 @@ class Sistema : AppCompatActivity() {
                 arrayOf(
                     Manifest.permission.BLUETOOTH_SCAN,
                     Manifest.permission.BLUETOOTH_CONNECT
-                ),
-                1
+                ), 1
             )
         } else {
             requestPermissions(
@@ -116,8 +107,7 @@ class Sistema : AppCompatActivity() {
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.BLUETOOTH,
                     Manifest.permission.BLUETOOTH_ADMIN
-                ),
-                1
+                ), 1
             )
         }
     }

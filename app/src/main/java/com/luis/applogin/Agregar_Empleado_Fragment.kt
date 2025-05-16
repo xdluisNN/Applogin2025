@@ -53,6 +53,7 @@ class Agregar_Empleado_Fragment : Fragment() {
 
                 // Ahora los empleados
                 db.collection("trabajador")
+                    .whereEqualTo("rol", "Empleado")
                     .get()
                     .addOnSuccessListener { result ->
                         empleadosSinEmpresa.clear()

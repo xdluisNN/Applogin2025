@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F0F0"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:background="@drawable/bg_card"
+            android:elevation="4dp">
+
+            <ListView
+                android:id="@+id/listDeviceBluetooth"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/descripcion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:lineSpacingExtra="4dp"
+                android:text="En esta sección controlará de manera remota la máquina clasificadora. Puede activarla y desactivarla. En caso de emergencia, acérquese al panel central para activar el paro de emergencia."
+                android:textColor="#090808"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/viewConn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/button1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Activar modo Bluetooth"
+                    android:drawableLeft="@drawable/bluetooth"
+                    android:drawablePadding="8dp"
+                    android:padding="12dp"
+                    android:layout_marginBottom="10dp" />
+
+                <Button
+                    android:id="@+id/buttonA"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Iniciar sistema"
+                    android:drawableLeft="@drawable/power"
+                    android:drawablePadding="8dp"
+                    android:padding="12dp"
+                    android:layout_marginBottom="10dp" />
+
+                <Button
+                    android:id="@+id/button2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Pausar sistema"
+                    android:drawableLeft="@drawable/pause"
+                    android:drawablePadding="8dp"
+                    android:padding="12dp"
+                    android:layout_marginBottom="10dp" />
+
+                <Button
+                    android:id="@+id/button0"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Resetear sistema"
+                    android:drawableLeft="@drawable/reset"
+                    android:drawablePadding="8dp"
+                    android:padding="12dp"
+                    android:layout_marginBottom="10dp" />
+
+                <Button
+                    android:id="@+id/buttonD"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Desconectar Bluetooth"
+                    android:drawableLeft="@drawable/disconnect"
+                    android:drawablePadding="8dp"
+                    android:padding="12dp"
+                    android:layout_marginBottom="10dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

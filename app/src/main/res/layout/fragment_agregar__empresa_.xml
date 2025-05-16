@@ -10,7 +10,7 @@
         android:id="@+id/imageBackground"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:src="@drawable/fondo_de_app"
+        android:src="@drawable/fondo_deappps"
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
         app:layout_constraintTop_toTopOf="parent"

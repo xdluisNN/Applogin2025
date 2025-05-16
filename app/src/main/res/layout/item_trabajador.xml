@@ -33,17 +33,25 @@
 
     <Button
         android:id="@+id/btnAsignar"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_green"
+        android:padding="12dp"
         android:text="Asignar Empresa"
-        android:visibility="gone"
-        android:layout_marginTop="8dp"/>
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/btnEstado"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_green"
+        android:padding="12dp"
         android:text="Estado"
-        android:layout_marginTop="8dp"/>
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
 
 </LinearLayout>

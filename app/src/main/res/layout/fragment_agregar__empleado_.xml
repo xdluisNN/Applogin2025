@@ -45,10 +45,9 @@
     <!-- Contenedor blanco fijo en la parte inferior -->
     <LinearLayout
         android:id="@+id/contenedorBlanco"
-        android:layout_width="320dp"
+        android:layout_width="355dp"
         android:layout_height="0dp"
         android:orientation="vertical"
-        android:background="@android:color/white"
         android:padding="16dp"
         android:elevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -1,6 +1,7 @@
 package com.luis.applogin
 
 import android.Manifest
+import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.os.Build
@@ -46,6 +47,25 @@ class Sistema : AppCompatActivity() {
         blue = BluJhr(this)
         blue.onBluetooth()
 
+        // Solicitar permisos
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            requestPermissions(
+                arrayOf(
+                    Manifest.permission.BLUETOOTH_SCAN,
+                    Manifest.permission.BLUETOOTH_CONNECT
+                ), 1
+            )
+        } else {
+            requestPermissions(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.BLUETOOTH,
+                    Manifest.permission.BLUETOOTH_ADMIN
+                ), 1
+            )
+        }
+
+        // Conexión al seleccionar un dispositivo
         binding.listDeviceBluetooth.setOnItemClickListener { _, _, i, _ ->
             if (devicesBluetooth.isNotEmpty()) {
                 blue.connect(devicesBluetooth[i])
@@ -86,29 +106,12 @@ class Sistema : AppCompatActivity() {
         binding.button2.setOnClickListener { blue.bluTx("2") }
         binding.button0.setOnClickListener { blue.bluTx("0") }
 
+        // Botón de desconexión
         binding.buttonD.setOnClickListener {
             blue.closeConnection()
             binding.listDeviceBluetooth.visibility = View.VISIBLE
             binding.viewConn.visibility = View.GONE
             binding.descripcion.visibility = View.GONE
-        }
-
-        // Permisos
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            requestPermissions(
-                arrayOf(
-                    Manifest.permission.BLUETOOTH_SCAN,
-                    Manifest.permission.BLUETOOTH_CONNECT
-                ), 1
-            )
-        } else {
-            requestPermissions(
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.BLUETOOTH,
-                    Manifest.permission.BLUETOOTH_ADMIN
-                ), 1
-            )
         }
     }
 
@@ -126,18 +129,17 @@ class Sistema : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
+    // ⚠️ ESTE MÉTODO ESCRUCIAL PARA MOSTRAR LOS DISPOSITIVOS
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (!blue.stateBluetoooth() && requestCode == 100) {
             blue.initializeBluetooth()
-        } else {
-            if (requestCode == 100) {
-                devicesBluetooth = blue.deviceBluetooth()
-                if (devicesBluetooth.isNotEmpty()) {
-                    val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, devicesBluetooth)
-                    binding.listDeviceBluetooth.adapter = adapter
-                } else {
-                    Toast.makeText(this, "No tienes vinculados dispositivos", Toast.LENGTH_SHORT).show()
-                }
+        } else if (requestCode == 100 && resultCode == Activity.RESULT_OK) {
+            devicesBluetooth = blue.deviceBluetooth()
+            if (devicesBluetooth.isNotEmpty()) {
+                val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, devicesBluetooth)
+                binding.listDeviceBluetooth.adapter = adapter
+            } else {
+                Toast.makeText(this, "No tienes vinculados dispositivos", Toast.LENGTH_SHORT).show()
             }
         }
         super.onActivityResult(requestCode, resultCode, data)

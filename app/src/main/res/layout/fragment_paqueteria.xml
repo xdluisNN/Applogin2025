@@ -1,17 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp"
     android:background="@drawable/fondo_de_app">
 
-    <!-- RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerEmpresasConPaquetes"
+    <!-- Contenedor principal en vertical -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <!-- Mensaje de "No perteneces" -->
+        <!-- Encabezado fijo arriba -->
+        <LinearLayout
+            android:id="@+id/headerPaquetería"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#80000000"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="6dp">
+
+            <TextView
+                android:id="@+id/titlePaquetería"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Paquetería"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Contenido desplazable -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerEmpresasConPaquetes"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <!-- Mensaje opcional superpuesto (invisible por defecto) -->
     <TextView
         android:id="@+id/textSinEmpresa"
         android:layout_width="wrap_content"
@@ -21,8 +49,6 @@
         android:textColor="#000000"
         android:padding="16dp"
         android:background="@drawable/fondo_redondeado"
-        android:elevation="6dp"
         android:visibility="gone"
         android:layout_gravity="center" />
-
 </FrameLayout>

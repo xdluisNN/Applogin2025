@@ -24,6 +24,7 @@ class PerfilFragment : Fragment() {
     private lateinit var editTextDireccion: EditText
     private lateinit var editTextTelefono: EditText
     private lateinit var btnGuardar: Button
+    private lateinit var btnSalir: Button
     private lateinit var btnEditar: Button
     private lateinit var logoutButton: Button
     private lateinit var btnCambiarContrasena: Button
@@ -47,6 +48,7 @@ class PerfilFragment : Fragment() {
         editTextTelefono = view.findViewById(R.id.editTextTelefono)
         btnEditar = view.findViewById(R.id.btnEditar)
         btnGuardar = view.findViewById(R.id.btnGuardar)
+        btnSalir = view.findViewById(R.id.btnSalir)
         logoutButton = view.findViewById(R.id.logoutButton)
         btnCambiarContrasena = view.findViewById(R.id.Cambiarcontrasena)
         btnMasInformacion = view.findViewById(R.id.Masinfo)
@@ -67,18 +69,18 @@ class PerfilFragment : Fragment() {
         uidActual?.let { cargarDatosTrabajador(it) }
 
         btnEditar.setOnClickListener {
-            if(!editando){
-                cambiarModoEdicion(true)
-                btnEditar.text = "Salir"
-                btnEditar.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.rojo))
-                logoutButton.visibility = View.GONE
-            }else{
-                cambiarModoEdicion(false)
-                btnEditar.text = "Editar informacion"
-                logoutButton.visibility = View.VISIBLE
-                btnEditar.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.celeste))
-                uidActual?.let { cargarDatosTrabajador(it) }
-            }
+            cambiarModoEdicion(true)
+            btnEditar.visibility = View.GONE
+            logoutButton.visibility = View.GONE
+            btnSalir.visibility = View.VISIBLE
+        }
+
+        btnSalir.setOnClickListener {
+            cambiarModoEdicion(false)
+            btnEditar.visibility = View.VISIBLE
+            logoutButton.visibility = View.VISIBLE
+            btnSalir.visibility = View.GONE
+            uidActual?.let { cargarDatosTrabajador(it) }
         }
 
         btnGuardar.setOnClickListener {
@@ -97,9 +99,21 @@ class PerfilFragment : Fragment() {
         editTextDireccion.isEnabled = habilitar
         editTextTelefono.isEnabled = habilitar
         btnGuardar.visibility = if (habilitar) View.VISIBLE else View.GONE
+        btnSalir.visibility = if (habilitar) View.VISIBLE else View.GONE
         btnCambiarContrasena.visibility = if (habilitar) View.GONE else View.VISIBLE
         btnMasInformacion.visibility = if (habilitar) View.GONE else View.VISIBLE
+
+        if (habilitar) {
+            // Cambiar colores al entrar en modo edición
+            btnSalir.setBackgroundResource(R.drawable.bg_red)
+            btnGuardar.setBackgroundResource(R.drawable.bg_green)
+        } else {
+            // Restaurar colores si es necesario (opcional)
+            btnSalir.setBackgroundResource(R.drawable.bg_red) // Ya se oculta, pero por consistencia
+            btnGuardar.setBackgroundResource(R.drawable.bg_green)
+        }
     }
+
 
     private fun cargarDatosTrabajador(uid: String) {
         db.collection("trabajador").document(uid).get()
@@ -153,8 +167,9 @@ class PerfilFragment : Fragment() {
                 .addOnSuccessListener {
                     Toast.makeText(requireContext(), "Datos actualizados correctamente", Toast.LENGTH_SHORT).show()
                     cambiarModoEdicion(false)
+                    btnEditar.visibility = View.VISIBLE
+                    btnSalir.visibility = View.GONE
                     btnEditar.text = "Editar informacion"
-                    btnEditar.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.celeste))
                     logoutButton.visibility = View.VISIBLE
                 }
                 .addOnFailureListener {

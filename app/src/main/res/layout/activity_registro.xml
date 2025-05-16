@@ -124,7 +124,7 @@
                     android:textColor="@android:color/white"
                     android:textStyle="bold" />
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnCerrar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

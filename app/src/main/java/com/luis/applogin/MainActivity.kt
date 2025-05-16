@@ -1,10 +1,13 @@
 package com.luis.applogin
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.text.InputType
+import android.view.MotionEvent
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -27,11 +30,44 @@ class MainActivity : AppCompatActivity() {
         ingresarButton = findViewById(R.id.ingresarbutton)
         emailText = findViewById(R.id.emailText)
         contraText = findViewById(R.id.contraText)
+
         val btnRegistrar = findViewById<Button>(R.id.btnRegistrar)
         btnRegistrar.setOnClickListener {
             val intent = Intent(this, RegistroActivity::class.java)
             startActivity(intent)
         }
+
+        val eyeClosed = resizeDrawable(R.drawable.ojo_cerrado, 30, 30)
+        contraText.setCompoundDrawablesWithIntrinsicBounds(null, null, eyeClosed, null)
+
+
+        // Mostrar/Ocultar contraseña al tocar ícono dentro del EditText
+        var passwordVisible = false
+        contraText.setOnTouchListener { _, event ->
+            val drawableRight = contraText.compoundDrawables[2]
+            if (drawableRight != null && event.action == MotionEvent.ACTION_UP &&
+                event.rawX >= (contraText.right - drawableRight.bounds.width() - contraText.paddingEnd)
+            ) {
+                passwordVisible = !passwordVisible
+                if (passwordVisible) {
+                    contraText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                    val eyeOpen = resizeDrawable(R.drawable.ojo_abierto, 30, 30)
+                    contraText.setCompoundDrawablesWithIntrinsicBounds(null, null, eyeOpen, null)
+                } else {
+                    contraText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                    val eyeClosed = resizeDrawable(R.drawable.ojo_cerrado, 30, 30)
+                    contraText.setCompoundDrawablesWithIntrinsicBounds(null, null, eyeClosed, null)
+                }
+                contraText.setSelection(contraText.text.length)
+                true
+            } else {
+                false
+            }
+        }
+
+
+
+
         setup()
     }
 
@@ -47,7 +83,6 @@ class MainActivity : AppCompatActivity() {
                     if (authResult.isSuccessful) {
                         val user = authResult.result?.user
                         user?.let {
-                            // Verificamos en Firestore si la cuenta está activa
                             val db = FirebaseFirestore.getInstance()
                             db.collection("trabajador").document(it.uid)
                                 .get()
@@ -61,7 +96,6 @@ class MainActivity : AppCompatActivity() {
                                             home(it.email ?: "", ProviderType.BASIC)
                                         }
                                     } else {
-                                        // Si no se encuentra documento, permitimos login
                                         home(it.email ?: "", ProviderType.BASIC)
                                     }
                                 }
@@ -84,8 +118,7 @@ class MainActivity : AppCompatActivity() {
         builder.setTitle("Error")
         builder.setMessage("Ha ocurrido un error al iniciar sesión")
         builder.setPositiveButton("Aceptar", null)
-        val dialog: AlertDialog = builder.create()
-        dialog.show()
+        builder.create().show()
     }
 
     private fun home(email: String, provider: ProviderType) {
@@ -95,6 +128,14 @@ class MainActivity : AppCompatActivity() {
         }
         startActivity(homeIntent)
     }
+
+    private fun resizeDrawable(drawableId: Int, width: Int, height: Int): Drawable {
+        val drawable = resources.getDrawable(drawableId, theme)
+        val bitmap = (drawable as BitmapDrawable).bitmap
+        val resizedBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true)
+        return BitmapDrawable(resources, resizedBitmap)
+    }
+
 
     override fun onResume() {
         super.onResume()
